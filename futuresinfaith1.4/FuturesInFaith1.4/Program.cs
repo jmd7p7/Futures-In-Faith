@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using FIFLibrary;
 
 namespace FuturesInFaith1._4
 {
@@ -16,7 +17,17 @@ namespace FuturesInFaith1._4
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+
+            //First check if this is the user's first time to log in
+            if (DBCommunication.IsInitialLogIn())
+            {
+                InitialSetupForm ISF = new InitialSetupForm();
+                ISF.ShowDialog();
+            }
+            if (!Globals.IsFirstLogin)
+            {
+                Application.Run(new MainForm());
+            }
         }
     }
 }

@@ -68,87 +68,6 @@ namespace FuturesInFaith1._4
             InvDataGridView.Columns.Add(CreditToColumn);
             InvDataGridView.Columns.Add(YouthColumn);
             InvDataGridView.Columns.Add(ReinvestColumn);
-
-            /*
-
-
-            //Configure the datagridview
-
-            //Set ID & foreign key fields to displayed = false
-            AddInvestorDataGridView.Columns[0].Visible = false;
-            AddInvestorDataGridView.Columns[1].Visible = false;
-            AddInvestorDataGridView.Columns[2].Visible = false;
-            AddInvestorDataGridView.Columns[4].Visible = false;
-            AddInvestorDataGridView.Columns[5].Visible = false;
-            AddInvestorDataGridView.Columns[6].Visible = false;
-            AddInvestorDataGridView.Columns[7].Visible = false;
-
-            //Add named columns representing the foreign key relationships
-            DataGridViewComboBoxColumn CreditToColumn = new DataGridViewComboBoxColumn();
-            CreditToColumn.HeaderText = "Credit To";
-            CreditToColumn.Name = "Credit To";
-            CreditToColumn.DataSource = new string[] { "general fund", "youth", "N/A" };
-
-
-            DataGridViewComboBoxColumn YouthColumn = new DataGridViewComboBoxColumn();
-            YouthColumn.HeaderText = "Youth Name";
-            YouthColumn.Name = "Youth Name";
-            YouthColumn.DataSource = DBCommunication.GetYouthFullNames();
-
-
-            DataGridViewComboBoxColumn PaymentTypeColumn = new DataGridViewComboBoxColumn();
-            PaymentTypeColumn.HeaderText = "Payment Type";
-            PaymentTypeColumn.Name = "Payment Type";
-            PaymentTypeColumn.DataSource = new string[] { "check", "cash", "N/A" };
-
-
-            FIFLibrary.CalendarColumn DateColumn = new FIFLibrary.CalendarColumn();
-            DateColumn.HeaderText = "Investment Date";
-
-
-            //Add other column properties
-            AddInvestorDataGridView.Columns[2].ToolTipText = "A valid date must be entered in the format: mm/dd/yyyy.  Example: 7/16/2015";
-
-
-            AddInvestorDataGridView.Columns.Add(CreditToColumn);
-            AddInvestorDataGridView.Columns.Add(YouthColumn);
-            AddInvestorDataGridView.Columns.Add(PaymentTypeColumn);
-            AddInvestorDataGridView.Columns.Add(DateColumn);
-
-            //Reorder the columns in the table
-
-            AddInvestorDataGridView.Columns[13].DisplayIndex = 0; // Date
-            AddInvestorDataGridView.Columns[3].DisplayIndex = 1; // Amount
-            AddInvestorDataGridView.Columns["Payment Type"].DisplayIndex = 2; // PaymentType
-            AddInvestorDataGridView.Columns[8].DisplayIndex = 3; // CheckNumber
-            AddInvestorDataGridView.Columns["Credit To"].DisplayIndex = 4; // CreditTo
-            AddInvestorDataGridView.Columns["Youth Name"].DisplayIndex = 5; // Youth
-            AddInvestorDataGridView.Columns[9].DisplayIndex = 6; // Reinvest
-            AddInvestorDataGridView.Columns[0].DisplayIndex = 7;
-            AddInvestorDataGridView.Columns[1].DisplayIndex = 8;
-            AddInvestorDataGridView.Columns[5].DisplayIndex = 9;
-            AddInvestorDataGridView.Columns[4].DisplayIndex = 10;
-            AddInvestorDataGridView.Columns[6].DisplayIndex = 11;
-            AddInvestorDataGridView.Columns[7].DisplayIndex = 12;
-            AddInvestorDataGridView.Columns[2].DisplayIndex = 13;
-
-            
-             //   When it's all said and done the AddInvestorDataGridView should be formatted as follows:
-             //* Column 0: InvestmentID
-             //* Column 1: InvestorID
-             //* Column 2: Date
-             //* Column 3: Amount (Display index 1)
-             //* Column 4: Certificate Number
-             //* Column 5: CreditTo
-             //* Column 6: YouthID
-             //* Column 7: PaymentType
-             //* Column 8: CheckNumber    (Display index 3)
-             //* Column 9: Reinvest     (Display index 6)
-             //* Column 10: Credit To   (Display index 4) 
-             //* Column 11: Youth Name    (Display index 5)
-             //* Column 12: Payment Type    (Display index 2)
-             //* Column 13: Investment Date  (Display index 0)
-             */
         }
 
         private void InvestorZipTextBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -488,6 +407,255 @@ namespace FuturesInFaith1._4
             e.Row.Cells[2].Value = Globals.DefaultPaymentType;
             e.Row.Cells[1].Value = Globals.DefaultInvestmentAmount;
             e.Row.Cells[6].Value = "false";
+        }
+
+        private void savePrintToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //First check for invalid cells on the datagrid
+            foreach (DataGridViewRow row in InvDataGridView.SelectedRows)
+            {
+                if (checkForInvalidValues(row))
+                {
+                    return;
+                }
+            }
+
+            //Alert the user if user has entered investments but not selected any for saving
+            if (InvDataGridView.Rows.Count > 1 && InvDataGridView.SelectedRows.Count == 0)
+            {
+                var result = MessageBox.Show("You have not selected any investments to save.  Do you wish to continue saving only the investor?", "No Investments Selected!", MessageBoxButtons.YesNo);
+                if (result == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+            }
+
+            //check to make sure that the required investor fields have been entered
+            if (
+                InvestorFNTextBox.Text == "" ||
+                InvestorLNTextBox.Text == "" ||
+                InvestorAddressTextBox.Text == "" ||
+                InvestorCityTextBox.Text == "" ||
+                InvestorStateTextBox.Text == "" ||
+                InvestorZipTextBox.Text == ""
+                )
+            {
+                MessageBox.Show("Please fill out all required fields for the investor.");
+                return;
+            }
+
+            if (!DBCommunication.SaveNewInvestor(InvestorFNTextBox.Text, InvestorLNTextBox.Text, InvestorAddressTextBox.Text,
+                InvestorCityTextBox.Text, InvestorStateTextBox.Text, InvestorZipTextBox.Text, InvestorEmailTextBox.Text, InvestorPhoneMaskedTextBox.Text,
+                InvestorDeceasedCheckBox.Checked, InvestorJoinDateDateTimePicker.Value, InvestorNotesRichTextBox.Text))
+            {
+                return; //error message supplied to user in the SaveNewInvestor() method
+            }
+
+
+            //Update the global list of investors to reflect the addition of the new investor
+            Globals.GlobalInvestors = DBCommunication.GetInvestors();
+
+            /*To create a new investment I need the investor's ID.  The investor's ID is not created until entered into
+             *the DB for the first time.  That's why I have to fetch it from the DB now.
+             */
+            Investor2 newInvestor = Globals.GlobalInvestors.Where(i => i.LabelName == InvestorLNTextBox.Text + ", " + InvestorFNTextBox.Text).Single();
+
+            List<Investment2> newInvestments = new List<Investment2>();
+            if (InvDataGridView.SelectedRows.Count > 0)
+            {
+                int youthID, outAmount;
+                string reinvest = "";
+                string checkNumber = "";
+                foreach (DataGridViewRow row in InvDataGridView.SelectedRows)
+                {
+                    if (row.Cells[3].Value != null)
+                    {
+                        checkNumber = row.Cells[3].Value.ToString();
+                    }
+                    if (Int32.TryParse(row.Cells[1].Value.ToString(), out outAmount))
+                    {
+
+                    }
+                    if (row.Cells[5].Value != null && row.Cells[5].Value.ToString() != "")
+                    {
+                        youthID = Globals.GlobalYouth.Where(y => y.FullName == row.Cells[5].Value.ToString()).Single().YouthID;
+                    }
+                    else
+                    {
+                        youthID = -1;
+                    }
+
+                    if (row.Cells[6].Value.GetType() == typeof(String))
+                    {
+                        if (row.Cells[6].Value.ToString() == "true")
+                        {
+                            reinvest = "1";
+                        }
+                        else
+                        {
+                            reinvest = "0";
+                        }
+                    }
+                    if (row.Cells[6].Value.GetType() == typeof(bool))
+                    {
+                        if ((bool)row.Cells[6].Value == true)
+                        {
+                            reinvest = "1";
+                        }
+                        else
+                        {
+                            reinvest = "0";
+                        }
+                    }
+                    newInvestments.Add(new Investment2(
+                            _investorID: newInvestor.InvestorID,
+                            _date: row.Cells[0].Value.ToString(),
+                            _amount: outAmount,
+                            _creditTo: row.Cells[4].Value.ToString(),
+                            _youthID: youthID,
+                            _paymentType: row.Cells[2].Value.ToString(),
+                            _checkNumber: checkNumber,
+                            _reinvest: reinvest
+                        ));
+                }
+                DBCommunication.SaveNewInvestments(newInvestments);
+            }
+            Globals.rebindOnMainForm = true;
+
+            //Now print the investments.  I'm printing after saving all the investments.  Saving is more important that printing
+            //and in case there is a problem printing,
+            //the user can always go and print the PDFs manually using adobe. 
+            PDFCreator pdfCreator = new PDFCreator(newInvestor);
+
+            foreach (Investment2 i in newInvestments)
+            {
+                pdfCreator.createPDF(i, "print");
+            }
+            this.Close();
+        }
+
+        private void saveAndEmailToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //First check for invalid cells on the datagrid
+            foreach (DataGridViewRow row in InvDataGridView.SelectedRows)
+            {
+                if (checkForInvalidValues(row))
+                {
+                    return;
+                }
+            }
+
+            //Alert the user if user has entered investments but not selected any for saving
+            if (InvDataGridView.Rows.Count > 1 && InvDataGridView.SelectedRows.Count == 0)
+            {
+                var result = MessageBox.Show("You have not selected any investments to save.  Do you wish to continue saving only the investor?", "No Investments Selected!", MessageBoxButtons.YesNo);
+                if (result == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+            }
+
+            //check to make sure that the required investor fields have been entered
+            if (
+                InvestorFNTextBox.Text == "" ||
+                InvestorLNTextBox.Text == "" ||
+                InvestorAddressTextBox.Text == "" ||
+                InvestorCityTextBox.Text == "" ||
+                InvestorStateTextBox.Text == "" ||
+                InvestorZipTextBox.Text == ""
+                )
+            {
+                MessageBox.Show("Please fill out all required fields for the investor.");
+                return;
+            }
+
+            if (!DBCommunication.SaveNewInvestor(InvestorFNTextBox.Text, InvestorLNTextBox.Text, InvestorAddressTextBox.Text,
+                InvestorCityTextBox.Text, InvestorStateTextBox.Text, InvestorZipTextBox.Text, InvestorEmailTextBox.Text, InvestorPhoneMaskedTextBox.Text,
+                InvestorDeceasedCheckBox.Checked, InvestorJoinDateDateTimePicker.Value, InvestorNotesRichTextBox.Text))
+            {
+                return; //error message supplied to user in the SaveNewInvestor() method
+            }
+
+
+            //Update the global list of investors to reflect the addition of the new investor
+            Globals.GlobalInvestors = DBCommunication.GetInvestors();
+
+            /*To create a new investment I need the investor's ID.  The investor's ID is not created until entered into
+             *the DB for the first time.  That's why I have to fetch it from the DB now.
+             */
+            Investor2 newInvestor = Globals.GlobalInvestors.Where(i => i.LabelName == InvestorLNTextBox.Text + ", " + InvestorFNTextBox.Text).Single();
+
+            List<Investment2> newInvestments = new List<Investment2>();
+            if (InvDataGridView.SelectedRows.Count > 0)
+            {
+                int youthID, outAmount;
+                string reinvest = "";
+                string checkNumber = "";
+                foreach (DataGridViewRow row in InvDataGridView.SelectedRows)
+                {
+                    if (row.Cells[3].Value != null)
+                    {
+                        checkNumber = row.Cells[3].Value.ToString();
+                    }
+                    if (Int32.TryParse(row.Cells[1].Value.ToString(), out outAmount))
+                    {
+
+                    }
+                    if (row.Cells[5].Value != null && row.Cells[5].Value.ToString() != "")
+                    {
+                        youthID = Globals.GlobalYouth.Where(y => y.FullName == row.Cells[5].Value.ToString()).Single().YouthID;
+                    }
+                    else
+                    {
+                        youthID = -1;
+                    }
+
+                    if (row.Cells[6].Value.GetType() == typeof(String))
+                    {
+                        if (row.Cells[6].Value.ToString() == "true")
+                        {
+                            reinvest = "1";
+                        }
+                        else
+                        {
+                            reinvest = "0";
+                        }
+                    }
+                    if (row.Cells[6].Value.GetType() == typeof(bool))
+                    {
+                        if ((bool)row.Cells[6].Value == true)
+                        {
+                            reinvest = "1";
+                        }
+                        else
+                        {
+                            reinvest = "0";
+                        }
+                    }
+                    newInvestments.Add(new Investment2(
+                            _investorID: newInvestor.InvestorID,
+                            _date: row.Cells[0].Value.ToString(),
+                            _amount: outAmount,
+                            _creditTo: row.Cells[4].Value.ToString(),
+                            _youthID: youthID,
+                            _paymentType: row.Cells[2].Value.ToString(),
+                            _checkNumber: checkNumber,
+                            _reinvest: reinvest
+                        ));
+                }
+                DBCommunication.SaveNewInvestments(newInvestments);
+            }
+            Globals.rebindOnMainForm = true;
+
+            //Now email the investments.  I'm emailing after saving all the investments.  Saving is more important that emailing
+            //and in case there is a problem emailing,
+            //the user can always go and print the PDFs manually using adobe. 
+            PDFCreator pdfCreator = new PDFCreator(newInvestor);
+            foreach (Investment2 i in newInvestments)
+            {
+                pdfCreator.createPDF(i, "email");
+            }
+            this.Close();
         }
     }
 }

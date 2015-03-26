@@ -63,18 +63,18 @@
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.InvestorNotesRichTextBox = new System.Windows.Forms.RichTextBox();
             this.label13 = new System.Windows.Forms.Label();
+            this.InvDataGridView = new System.Windows.Forms.DataGridView();
             this.investment2BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.investmentBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.InvDataGridView = new System.Windows.Forms.DataGridView();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.InvDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.investment2BindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.investmentBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.InvDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -96,6 +96,7 @@
             this.savePrintToolStripMenuItem.Name = "savePrintToolStripMenuItem";
             this.savePrintToolStripMenuItem.Size = new System.Drawing.Size(164, 20);
             this.savePrintToolStripMenuItem.Text = "Save and Print Certificate(s)";
+            this.savePrintToolStripMenuItem.Click += new System.EventHandler(this.savePrintToolStripMenuItem_Click);
             // 
             // saveAndEmailToolStripMenuItem
             // 
@@ -104,6 +105,7 @@
             this.saveAndEmailToolStripMenuItem.Name = "saveAndEmailToolStripMenuItem";
             this.saveAndEmailToolStripMenuItem.Size = new System.Drawing.Size(168, 20);
             this.saveAndEmailToolStripMenuItem.Text = "Save and Email Certificate(s)";
+            this.saveAndEmailToolStripMenuItem.Click += new System.EventHandler(this.saveAndEmailToolStripMenuItem_Click);
             // 
             // saveAndCloseToolStripMenuItem
             // 
@@ -389,14 +391,6 @@
             this.label13.TabIndex = 5;
             this.label13.Text = "Notes";
             // 
-            // investment2BindingSource
-            // 
-            this.investment2BindingSource.DataSource = typeof(FIFLibrary.Investment2);
-            // 
-            // investmentBindingSource
-            // 
-            this.investmentBindingSource.DataSource = typeof(FIFLibrary.Investment);
-            // 
             // InvDataGridView
             // 
             this.InvDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -408,6 +402,14 @@
             this.InvDataGridView.CurrentCellDirtyStateChanged += new System.EventHandler(this.InvDataGridView_CurrentCellDirtyStateChanged);
             this.InvDataGridView.DefaultValuesNeeded += new System.Windows.Forms.DataGridViewRowEventHandler(this.InvDataGridView_DefaultValuesNeeded);
             this.InvDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.InvDataGridView_EditingControlShowing);
+            // 
+            // investment2BindingSource
+            // 
+            this.investment2BindingSource.DataSource = typeof(FIFLibrary.Investment2);
+            // 
+            // investmentBindingSource
+            // 
+            this.investmentBindingSource.DataSource = typeof(FIFLibrary.Investment);
             // 
             // AddInvestorForm
             // 
@@ -437,9 +439,9 @@
             this.groupBox4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.InvDataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.investment2BindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.investmentBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.InvDataGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

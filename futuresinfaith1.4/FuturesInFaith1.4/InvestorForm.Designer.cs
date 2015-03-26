@@ -382,6 +382,7 @@
             this.saveAndPrintCertificatesToolStripMenuItem.Name = "saveAndPrintCertificatesToolStripMenuItem";
             this.saveAndPrintCertificatesToolStripMenuItem.Size = new System.Drawing.Size(164, 20);
             this.saveAndPrintCertificatesToolStripMenuItem.Text = "Save and Print Certificate(s)";
+            this.saveAndPrintCertificatesToolStripMenuItem.Click += new System.EventHandler(this.saveAndPrintCertificatesToolStripMenuItem_Click);
             // 
             // saveAndEmailCertificatesToolStripMenuItem
             // 
@@ -390,6 +391,7 @@
             this.saveAndEmailCertificatesToolStripMenuItem.Name = "saveAndEmailCertificatesToolStripMenuItem";
             this.saveAndEmailCertificatesToolStripMenuItem.Size = new System.Drawing.Size(168, 20);
             this.saveAndEmailCertificatesToolStripMenuItem.Text = "Save and Email Certificate(s)";
+            this.saveAndEmailCertificatesToolStripMenuItem.Click += new System.EventHandler(this.saveAndEmailCertificatesToolStripMenuItem_Click);
             // 
             // saveAndCloseToolStripMenuItem
             // 

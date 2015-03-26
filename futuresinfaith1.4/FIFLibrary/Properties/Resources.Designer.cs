@@ -59,5 +59,15 @@ namespace FIFLibrary.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] FIF_CertificateTemplate {
+            get {
+                object obj = ResourceManager.GetObject("FIF_CertificateTemplate", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

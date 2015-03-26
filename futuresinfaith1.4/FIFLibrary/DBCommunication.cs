@@ -510,5 +510,162 @@ namespace FIFLibrary
                 return false;
             }
         }
+
+        public static bool SaveSettings(string email, string password, DateTime startDate, 
+            DateTime endDate, string defaultAmount, string defaultCreditTo, string defaulyPaymentType, string filePath)
+        {
+            string saveSettingsCommandString = 
+                string.Format(@"UPDATE SETTINGS SET
+                                AdminEmail = '{0}',
+                                AdmindPassword = '{1}',
+                                ProgramStartDate = '{2}',
+                                ProgramEndDate = '{3}',
+                                SaveFilePath = '{4}',
+                                DefaultInvestmentAmount = '{5}',
+                                DefaultCreditTo = '{6}',
+                                DefaultPaymentType = '{7}'
+                                WHERE SettingsID = 1",
+                                email, password, startDate.ToShortDateString(), endDate.ToShortDateString(),
+                                filePath, defaultAmount, defaultCreditTo, defaulyPaymentType);
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(Globals.ConnectionString))
+                {
+                    using (SQLiteCommand saveSettingsCommand = new SQLiteCommand(saveSettingsCommandString, conn))
+                    {
+                        conn.Open();
+                        int result = saveSettingsCommand.ExecuteNonQuery();
+                        Globals.AdminEmail = email;
+                        Globals.AdminPassword = password;
+                        Globals.ProgramStartDate = startDate;
+                        Globals.ProgramEndDate = endDate;
+                        Globals.SaveFilePath = filePath;
+                        Globals.DefaultCreditToType = defaultCreditTo;
+                        Globals.DefaultPaymentType = defaulyPaymentType;
+                        Globals.DefaultInvestmentAmount = Convert.ToInt32(defaultAmount);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(string.Format("Unable to save settings to the database.  \nError Message: {0}", ex.Message));
+                return false;
+            }
+            return true;
+        }
+
+        //This is used when the program is run for the first time to save user's initial settings.  The only difference is that 
+        //this version sets the value for isFirstLogIn to false (actually it's column 'Extra1' in the DB)
+        public static bool SaveInitialSettings(string email, string password, DateTime startDate,
+            DateTime endDate, string defaultAmount, string defaultCreditTo, string defaulyPaymentType, string filePath, bool isFirstLogIn)
+        {
+            string _isFirstLogIn;
+            if(isFirstLogIn == false)
+            {
+                _isFirstLogIn = "false";
+            }
+            else
+            {
+                _isFirstLogIn = "true";
+            }
+            
+            string saveSettingsCommandString =
+                string.Format(@"UPDATE SETTINGS SET
+                                AdminEmail = '{0}',
+                                AdmindPassword = '{1}',
+                                ProgramStartDate = '{2}',
+                                ProgramEndDate = '{3}',
+                                SaveFilePath = '{4}',
+                                DefaultInvestmentAmount = '{5}',
+                                DefaultCreditTo = '{6}',
+                                DefaultPaymentType = '{7}',
+                                Extra1 = '{8}'
+                                WHERE SettingsID = 1",
+                                email, password, startDate.ToShortDateString(), endDate.ToShortDateString(),
+                                filePath, defaultAmount, defaultCreditTo, defaulyPaymentType, _isFirstLogIn);
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(Globals.ConnectionString))
+                {
+                    using (SQLiteCommand saveSettingsCommand = new SQLiteCommand(saveSettingsCommandString, conn))
+                    {
+                        conn.Open();
+                        int result = saveSettingsCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(string.Format("Unable to save settings to the database.  \nError Message: {0}", ex.Message));
+                return false;
+            }
+            return true;
+        }
+        public static bool LoadSettings()
+        {
+            /*Extra Settings:
+             * Extra1: type: string, values: true, false, use: indicates whether or not this is the first time a user is logging into the program 
+             */
+            string LoadSettingsCommandString = "Select * FROM Settings WHERE SettingsID = 1";
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(Globals.ConnectionString))
+                {
+                    using (SQLiteCommand LoadSettingsCommand = new SQLiteCommand(LoadSettingsCommandString, conn))
+                    {
+                        conn.Open();
+                        using (SQLiteDataReader rdr = LoadSettingsCommand.ExecuteReader())
+                        {
+                            rdr.Read();
+                            Globals.AdminEmail = rdr["AdminEmail"].ToString();
+                            Globals.AdminPassword = rdr["AdmindPassword"].ToString();
+                            Globals.DefaultCreditToType = rdr["DefaultCreditTo"].ToString();
+                            Globals.DefaultPaymentType = rdr["DefaultPaymentType"].ToString();
+                            Globals.SaveFilePath = rdr["SaveFilePath"].ToString();
+                            Globals.ProgramStartDate = Convert.ToDateTime(rdr["ProgramStartDate"].ToString());
+                            Globals.ProgramEndDate = Convert.ToDateTime(rdr["ProgramEndDate"].ToString());
+                            Globals.DefaultInvestmentAmount = Convert.ToInt32(rdr["DefaultInvestmentAmount"].ToString());
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(string.Format("Unable to load default settings.  \nError Message: {0}", ex.Message));
+                return false;
+            }
+            return true;
+        }
+
+        public static bool IsInitialLogIn()
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(Globals.ConnectionString))
+                {
+                    string isInitLoginCommandString = "SELECT Extra1 FROM Settings WHERE SettingsID = 1";
+                    using (SQLiteCommand isInitLogInCommand = new SQLiteCommand(isInitLoginCommandString, conn))
+                    {
+                        conn.Open();
+                        var result = isInitLogInCommand.ExecuteScalar();
+                        if (result.ToString() == "true")
+                        {
+                            return true;
+                        }
+
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(string.Format("Unable to determine if this is your first time logging in.  The system will take you through the initial setup.  \nError Message: {0}", ex.Message));
+                return false;
+            }
+            return false;
+        }
+        public static bool InitialSetup()
+        {
+            return false;
+        }
     }
 }

@@ -133,6 +133,12 @@ namespace FuturesInFaith1._4
         //changes made to the selected investments (may be new investments).
         private void saveAndCloseToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /*Multiple saves are potentially going on.  An investor's info is being saved,
+             new investments may be saved, and updates to old investments may be saved.  The following
+             variables track which save operations were successfully completed so as to give the user
+             a helpful error message should something go wrong.*/
+
+
             //check to make sure that the required fields have been entered
             if (
                     FirstNameTextBox.Text == "" ||
@@ -221,9 +227,9 @@ namespace FuturesInFaith1._4
                         outReinvest = "0";
                     }
                 }
-                if(row.Cells[9].Value.ToString() == "true") //Adding to the new investments list
+                if(row.Cells[9].Value.ToString() == "true") //If true it's a bran new investment
                 {
-                    lastInvestYear = DateTime.Now.Year.ToString(); //Update the investor's LastInvestYear since we're adding a new investment this eyar
+                    lastInvestYear = DateTime.Now.Year.ToString(); //Update the investor's LastInvestYear since we're adding a new investment this year
                     newInvestments.Add(new Investment2(
                             _investorID: selectedInvestor.InvestorID,
                             _date: row.Cells[0].Value.ToString(),
@@ -235,7 +241,7 @@ namespace FuturesInFaith1._4
                             _reinvest: outReinvest
                         ));
                 }
-                else //Adding to the updated investments list
+                else //This is a previously created investment we're now updating
                 {
                     int outInvestmentID;
                     if (Int32.TryParse(row.Cells[8].Value.ToString(), out outInvestmentID)) { }
@@ -253,10 +259,20 @@ namespace FuturesInFaith1._4
                     ));
                 }
             }
+
+            //Update the investor's information in the DB
+            if (!DBCommunication.UpdateInvestor(selectedInvestor.InvestorID, FirstNameTextBox.Text, LastNameTextBox.Text, AddressTextBox.Text,
+                CityTextBox.Text, StateTextBox.Text, ZipTextBox.Text, EmailTextBox.Text, PhoneMaskedTextBox.Text, InvestorDeceasedCheckBox.Checked,
+                JoinDateTimePicker.Value, NotesRichTextBox.Text, LabelNameTextBox.Text, lastInvestYear))
+            {
+                return;
+            }
+
             if (newInvestments.Count > 0)
             {
                 if(!DBCommunication.SaveNewInvestments(newInvestments))
                 {
+                    MessageBox.Show("Any updates made to the investor were saved to the database.  New or updated investments were not saved.");
                     return;
                 }
             }
@@ -264,17 +280,9 @@ namespace FuturesInFaith1._4
             {
                 if(!DBCommunication.UpdateInvestments(updatedInvestments))
                 {
+                    MessageBox.Show("Any updates made to the investor were saved to the database.  Any new investments were saved to the database but updated investments were not saved.");
                     return;
                 }
-            }
-
-
-            //Now update the investor's information in the DB
-            if(!DBCommunication.UpdateInvestor(selectedInvestor.InvestorID, FirstNameTextBox.Text, LastNameTextBox.Text, AddressTextBox.Text,
-                CityTextBox.Text, StateTextBox.Text, ZipTextBox.Text, EmailTextBox.Text, PhoneMaskedTextBox.Text, InvestorDeceasedCheckBox.Checked,
-                JoinDateTimePicker.Value, NotesRichTextBox.Text, LabelNameTextBox.Text, lastInvestYear))
-            {
-                return;
             }
 
             MessageBox.Show("Save operation successfully executed.");
@@ -400,10 +408,332 @@ namespace FuturesInFaith1._4
             }
         }
 
+        private void saveAndPrintCertificatesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //check to make sure that the required fields have been entered
+            if (
+                    FirstNameTextBox.Text == "" ||
+                    LastNameTextBox.Text == "" ||
+                    AddressTextBox.Text == "" ||
+                    CityTextBox.Text == "" ||
+                    StateTextBox.Text == "" ||
+                    ZipTextBox.Text == "" ||
+                    LabelNameTextBox.Text == ""
+                )
+            {
+                MessageBox.Show("Please fill out all required fields.");
+                return;
+            }
+            if (LabelNameTextBox.Text != LastNameTextBox.Text + ", " + FirstNameTextBox.Text)
+            {
+                var result = MessageBox.Show("The label name does not match the first and last name.  Save changes anyway?", "Name Mis-match Alert!", MessageBoxButtons.YesNo);
+                if (result == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+            }
+            if (InvestmentsDataGridView.SelectedRows.Count == 0)
+            {
+                var result = MessageBox.Show("You have not selected any investments to update/add.  Save anyway?", "Alert!", MessageBoxButtons.YesNo);
+                if (result == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+            }
 
+            //First check for invalid cells on the datagrid
+            foreach (DataGridViewRow row in InvestmentsDataGridView.SelectedRows)
+            {
+                if (checkForInvalidValues(row))
+                {
+                    return;
+                }
+            }
 
+            string lastInvestYear = LastInvYearTextBox.Text;
+            List<Investment2> newInvestments = new List<Investment2>();
+            List<Investment2> updatedInvestments = new List<Investment2>();
 
+            foreach (DataGridViewRow row in InvestmentsDataGridView.SelectedRows)
+            {
+                int outAmount, outYouthID;
+                string outReinvest;
+                string checkNumber = "";
+                if (Int32.TryParse(row.Cells[1].Value.ToString(), out outAmount))
+                {
 
+                }
+                if (row.Cells[3].Value != null)
+                {
+                    checkNumber = row.Cells[3].Value.ToString();
+                }
+                if (row.Cells[4].Value.ToString() != "youth")
+                {
+                    outYouthID = -1;
+                }
+                else
+                {
+                    outYouthID = Globals.GlobalYouth.Where(y => y.FullName == row.Cells[5].Value.ToString()).Select(y => y.YouthID).Single();
+                }
+                if (row.Cells[6].Value.GetType() == typeof(string))
+                {
+                    if (row.Cells[6].Value.ToString() == "false")
+                    {
+                        outReinvest = "0";
+                    }
+                    else
+                    {
+                        outReinvest = "1";
+                    }
+
+                }
+                else
+                {
+                    if ((bool)row.Cells[6].Value == true)
+                    {
+                        outReinvest = "1";
+                    }
+                    else
+                    {
+                        outReinvest = "0";
+                    }
+                }
+                if (row.Cells[9].Value.ToString() == "true") //If true it's a bran new investment
+                {
+                    lastInvestYear = DateTime.Now.Year.ToString(); //Update the investor's LastInvestYear since we're adding a new investment this year
+                    newInvestments.Add(new Investment2(
+                            _investorID: selectedInvestor.InvestorID,
+                            _date: row.Cells[0].Value.ToString(),
+                            _amount: outAmount,
+                            _creditTo: row.Cells[4].Value.ToString(),
+                            _youthID: outYouthID,
+                            _paymentType: row.Cells[2].Value.ToString(),
+                            _checkNumber: checkNumber,
+                            _reinvest: outReinvest
+                        ));
+                }
+                else //This is a previously created investment we're now updating
+                {
+                    int outInvestmentID;
+                    if (Int32.TryParse(row.Cells[8].Value.ToString(), out outInvestmentID)) { }
+                    updatedInvestments.Add(new Investment2(
+                        _investmentID: outInvestmentID,
+                        _investorID: selectedInvestor.InvestorID,
+                        _date: row.Cells[0].Value.ToString(),
+                        _amount: outAmount,
+                        _certificateNumber: row.Cells[7].Value.ToString(),
+                        _creditTo: row.Cells[4].Value.ToString(),
+                        _youthID: outYouthID,
+                        _paymentType: row.Cells[2].Value.ToString(),
+                        _checkNumber: checkNumber,
+                        _reinvest: outReinvest
+                    ));
+                }
+            }
+
+            //Now update the investor's information in the DB
+            if (!DBCommunication.UpdateInvestor(selectedInvestor.InvestorID, FirstNameTextBox.Text, LastNameTextBox.Text, AddressTextBox.Text,
+                CityTextBox.Text, StateTextBox.Text, ZipTextBox.Text, EmailTextBox.Text, PhoneMaskedTextBox.Text, InvestorDeceasedCheckBox.Checked,
+                JoinDateTimePicker.Value, NotesRichTextBox.Text, LabelNameTextBox.Text, lastInvestYear))
+            {
+                return;
+            }
+
+            if (newInvestments.Count > 0)
+            {
+                if (!DBCommunication.SaveNewInvestments(newInvestments))
+                {
+                    MessageBox.Show("Any updates made to the investor were saved to the database.  New or updated investments were not saved.");
+                    return;
+                }
+            }
+            if (updatedInvestments.Count > 0)
+            {
+                if (!DBCommunication.UpdateInvestments(updatedInvestments))
+                {
+                    MessageBox.Show("Any updates made to the investor were saved to the database.  Any new investments were saved to the database but updated investments were not saved.");
+                    return;
+                }
+            }
+
+            PDFCreator pdfCreator = new PDFCreator(Globals.GlobalInvestors.Where(i=>i.InvestorID == selectedInvestor.InvestorID).Single());
+            foreach (Investment2 i in updatedInvestments)
+            {
+                pdfCreator.createPDF(i, "print");
+            }
+            foreach (Investment2 i in newInvestments)
+            {
+                pdfCreator.createPDF(i, "print");
+            }
+            MessageBox.Show("Save operation successfully executed.");
+            Globals.rebindOnMainForm = true;
+            this.Close();
+        }
+
+        private void saveAndEmailCertificatesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //check to make sure that the required fields have been entered
+            if (
+                    FirstNameTextBox.Text == "" ||
+                    LastNameTextBox.Text == "" ||
+                    AddressTextBox.Text == "" ||
+                    CityTextBox.Text == "" ||
+                    StateTextBox.Text == "" ||
+                    ZipTextBox.Text == "" ||
+                    LabelNameTextBox.Text == ""
+                )
+            {
+                MessageBox.Show("Please fill out all required fields.");
+                return;
+            }
+            if (LabelNameTextBox.Text != LastNameTextBox.Text + ", " + FirstNameTextBox.Text)
+            {
+                var result = MessageBox.Show("The label name does not match the first and last name.  Save changes anyway?", "Name Mis-match Alert!", MessageBoxButtons.YesNo);
+                if (result == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+            }
+            if (InvestmentsDataGridView.SelectedRows.Count == 0)
+            {
+                var result = MessageBox.Show("You have not selected any investments to update/add.  Save anyway?", "Alert!", MessageBoxButtons.YesNo);
+                if (result == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+            }
+
+            //First check for invalid cells on the datagrid
+            foreach (DataGridViewRow row in InvestmentsDataGridView.SelectedRows)
+            {
+                if (checkForInvalidValues(row))
+                {
+                    return;
+                }
+            }
+
+            string lastInvestYear = LastInvYearTextBox.Text;
+            List<Investment2> newInvestments = new List<Investment2>();
+            List<Investment2> updatedInvestments = new List<Investment2>();
+
+            foreach (DataGridViewRow row in InvestmentsDataGridView.SelectedRows)
+            {
+                int outAmount, outYouthID;
+                string outReinvest;
+                string checkNumber = "";
+                if (Int32.TryParse(row.Cells[1].Value.ToString(), out outAmount))
+                {
+
+                }
+                if (row.Cells[3].Value != null)
+                {
+                    checkNumber = row.Cells[3].Value.ToString();
+                }
+                if (row.Cells[4].Value.ToString() != "youth")
+                {
+                    outYouthID = -1;
+                }
+                else
+                {
+                    outYouthID = Globals.GlobalYouth.Where(y => y.FullName == row.Cells[5].Value.ToString()).Select(y => y.YouthID).Single();
+                }
+                if (row.Cells[6].Value.GetType() == typeof(string))
+                {
+                    if (row.Cells[6].Value.ToString() == "false")
+                    {
+                        outReinvest = "0";
+                    }
+                    else
+                    {
+                        outReinvest = "1";
+                    }
+
+                }
+                else
+                {
+                    if ((bool)row.Cells[6].Value == true)
+                    {
+                        outReinvest = "1";
+                    }
+                    else
+                    {
+                        outReinvest = "0";
+                    }
+                }
+                if (row.Cells[9].Value.ToString() == "true") //If true it's a bran new investment
+                {
+                    lastInvestYear = DateTime.Now.Year.ToString(); //Update the investor's LastInvestYear since we're adding a new investment this year
+                    newInvestments.Add(new Investment2(
+                            _investorID: selectedInvestor.InvestorID,
+                            _date: row.Cells[0].Value.ToString(),
+                            _amount: outAmount,
+                            _creditTo: row.Cells[4].Value.ToString(),
+                            _youthID: outYouthID,
+                            _paymentType: row.Cells[2].Value.ToString(),
+                            _checkNumber: checkNumber,
+                            _reinvest: outReinvest
+                        ));
+                }
+                else //This is a previously created investment we're now updating
+                {
+                    int outInvestmentID;
+                    if (Int32.TryParse(row.Cells[8].Value.ToString(), out outInvestmentID)) { }
+                    updatedInvestments.Add(new Investment2(
+                        _investmentID: outInvestmentID,
+                        _investorID: selectedInvestor.InvestorID,
+                        _date: row.Cells[0].Value.ToString(),
+                        _amount: outAmount,
+                        _certificateNumber: row.Cells[7].Value.ToString(),
+                        _creditTo: row.Cells[4].Value.ToString(),
+                        _youthID: outYouthID,
+                        _paymentType: row.Cells[2].Value.ToString(),
+                        _checkNumber: checkNumber,
+                        _reinvest: outReinvest
+                    ));
+                }
+            }
+
+            //Now update the investor's information in the DB
+            if (!DBCommunication.UpdateInvestor(selectedInvestor.InvestorID, FirstNameTextBox.Text, LastNameTextBox.Text, AddressTextBox.Text,
+                CityTextBox.Text, StateTextBox.Text, ZipTextBox.Text, EmailTextBox.Text, PhoneMaskedTextBox.Text, InvestorDeceasedCheckBox.Checked,
+                JoinDateTimePicker.Value, NotesRichTextBox.Text, LabelNameTextBox.Text, lastInvestYear))
+            {
+                return;
+            }
+
+            //Save the new investments
+            if (newInvestments.Count > 0)
+            {
+                if (!DBCommunication.SaveNewInvestments(newInvestments))
+                {
+                    MessageBox.Show("Any updates made to the investor were saved to the database.  New or updated investments were not saved.");
+                    return;
+                }
+            }
+
+            //Save updates to existing investments
+            if (updatedInvestments.Count > 0)
+            {
+                if (!DBCommunication.UpdateInvestments(updatedInvestments))
+                {
+                    MessageBox.Show("Any updates made to the investor were saved to the database.  Any new investments were saved to the database but updated investments were not saved.");
+                    return;
+                }
+            }
+
+            PDFCreator pdfCreator = new PDFCreator(Globals.GlobalInvestors.Where(i=>i.InvestorID == selectedInvestor.InvestorID).Single());
+            foreach (Investment2 i in updatedInvestments)
+            {
+                pdfCreator.createPDF(i, "email");
+            }
+            foreach (Investment2 i in newInvestments)
+            {
+                pdfCreator.createPDF(i, "email");
+            }
+            MessageBox.Show("Save operation successfully executed.");
+            Globals.rebindOnMainForm = true;
+            this.Close();
+        }
 
     }
 }

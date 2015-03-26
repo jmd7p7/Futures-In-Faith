@@ -14,6 +14,8 @@ namespace FIFLibrary
         public static string ConnectionString = @"Data Source=FuturesInFaith.sqlite;Version=3;";
         public static bool rebindOnMainForm;
         public static bool rebindYouthOnMainForm;
+        public static bool IsFirstLogin;
+
 
         public static List<Investor2> GlobalInvestors;
         public static List<Investment2> GlobalInvestments;
@@ -26,6 +28,11 @@ namespace FIFLibrary
         public static string DefaultPaymentType = "check";
         public static string DefaultCreditToType = "general fund";
         public static int DefaultInvestmentAmount = 40;
+        public static string SaveFilePath = @"C:\Users\Jonathan\Desktop\temp files\FIF\";
+        public static DateTime ProgramStartDate = Convert.ToDateTime("1/1/2010"); //This will be initialized by the global user settings
+        public static DateTime ProgramEndDate;  //This will be initialized by the global user settings
+        public static string AdminEmail = "stgabesmusik@gmail.com";
+        public static string AdminPassword = "mnjkiu89";
 
         //Global methods
 
@@ -191,13 +198,28 @@ namespace FIFLibrary
                 }
             }
 
-            Random ran = new Random(DateTime.Now.Millisecond);
+            Random ran = new Random(DateTime.Now.Millisecond*2);
             int indexOfStockNumber = ran.Next(0, GlobalCertificateNumbers.Count-1);
             int stockNumber = Globals.GlobalCertificateNumbers[indexOfStockNumber];
             Globals.GlobalCertificateNumbers.RemoveAt(indexOfStockNumber);
-            certificateNumber = string.Format("{0} {1}-{2}", GlobalCurrentCertificatePrefix, stockNumber, stockNumber + 500);
+            string formattedStockNumber;
+            if(stockNumber < 10)
+            {
+                formattedStockNumber = "00" + stockNumber;
+            }
+            else if(stockNumber < 100)
+            {
+                formattedStockNumber = "0" + stockNumber;
+            }
+            else
+            {
+                formattedStockNumber = stockNumber.ToString();
+            }
+            certificateNumber = string.Format("{0} {1}-{2}", GlobalCurrentCertificatePrefix, formattedStockNumber, stockNumber + 500);
 
             return certificateNumber;
         }
+
+
     }
 }
