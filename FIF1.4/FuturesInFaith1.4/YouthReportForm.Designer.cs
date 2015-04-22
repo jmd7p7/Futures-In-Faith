@@ -30,10 +30,15 @@
         {
             this.components = new System.ComponentModel.Container();
             Microsoft.Reporting.WinForms.ReportDataSource reportDataSource1 = new Microsoft.Reporting.WinForms.ReportDataSource();
-            this.YouthReportViewer = new Microsoft.Reporting.WinForms.ReportViewer();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(YouthReportForm));
             this.YouthReportItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.YouthReportViewer = new Microsoft.Reporting.WinForms.ReportViewer();
             ((System.ComponentModel.ISupportInitialize)(this.YouthReportItemBindingSource)).BeginInit();
             this.SuspendLayout();
+            // 
+            // YouthReportItemBindingSource
+            // 
+            this.YouthReportItemBindingSource.DataSource = typeof(FIFLibrary.YouthReportItem);
             // 
             // YouthReportViewer
             // 
@@ -47,16 +52,13 @@
             this.YouthReportViewer.Size = new System.Drawing.Size(688, 282);
             this.YouthReportViewer.TabIndex = 0;
             // 
-            // YouthReportItemBindingSource
-            // 
-            this.YouthReportItemBindingSource.DataSource = typeof(FIFLibrary.YouthReportItem);
-            // 
             // YouthReportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(688, 282);
             this.Controls.Add(this.YouthReportViewer);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "YouthReportForm";
             this.Text = "YouthReportForm";
             this.Load += new System.EventHandler(this.YouthReportForm_Load);

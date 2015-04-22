@@ -30,12 +30,17 @@
         {
             this.components = new System.ComponentModel.Container();
             Microsoft.Reporting.WinForms.ReportDataSource reportDataSource1 = new Microsoft.Reporting.WinForms.ReportDataSource();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InvestmentsReportForm));
+            this.InvestmentReportItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.InvestmentsReportViewer = new Microsoft.Reporting.WinForms.ReportViewer();
             this.Investor2BindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.InvestmentReportItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.Investor2BindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InvestmentReportItemBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Investor2BindingSource)).BeginInit();
             this.SuspendLayout();
+            // 
+            // InvestmentReportItemBindingSource
+            // 
+            this.InvestmentReportItemBindingSource.DataSource = typeof(FIFLibrary.InvestmentReportItem);
             // 
             // InvestmentsReportViewer
             // 
@@ -53,21 +58,18 @@
             // 
             this.Investor2BindingSource.DataSource = typeof(FIFLibrary.Investor2);
             // 
-            // InvestmentReportItemBindingSource
-            // 
-            this.InvestmentReportItemBindingSource.DataSource = typeof(FIFLibrary.InvestmentReportItem);
-            // 
             // InvestmentsReportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1009, 380);
             this.Controls.Add(this.InvestmentsReportViewer);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "InvestmentsReportForm";
             this.Text = "Investments Report";
             this.Load += new System.EventHandler(this.InvestmentsReportForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.Investor2BindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.InvestmentReportItemBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Investor2BindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }

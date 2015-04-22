@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddInvestorForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAndEmailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -128,7 +129,8 @@
             // 
             this.cancelToolStripMenuItem.BackColor = System.Drawing.Color.LightGray;
             this.cancelToolStripMenuItem.Name = "cancelToolStripMenuItem";
-            this.cancelToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.cancelToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.C)));
             this.cancelToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
             this.cancelToolStripMenuItem.Text = "Cancel";
             this.cancelToolStripMenuItem.ToolTipText = "Ctrl+C";
@@ -455,6 +457,7 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "AddInvestorForm";
             this.Text = "Add Investor";

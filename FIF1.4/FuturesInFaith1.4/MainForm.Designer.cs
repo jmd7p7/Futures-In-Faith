@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.InvestorsTab = new System.Windows.Forms.TabPage();
             this.button2 = new System.Windows.Forms.Button();
@@ -772,6 +773,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(354, 471);
             this.Controls.Add(this.MainTabControl);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(370, 600);
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(370, 400);

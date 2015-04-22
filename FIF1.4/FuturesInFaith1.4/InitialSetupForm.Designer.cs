@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InitialSetupForm));
             this.CreateSettingsButton = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
             this.DefaultFilePathTextBox = new System.Windows.Forms.TextBox();
@@ -280,6 +281,7 @@
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "InitialSetupForm";
             this.Text = "InitialSetupForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.InitialSetupForm_FormClosing);
