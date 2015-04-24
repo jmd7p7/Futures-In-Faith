@@ -11,9 +11,9 @@ namespace FIFLibrary
     {
         public static int seedMultiplier = 2;
         public static int ID = 1000000;
-        public static string ConnectionString = @"Data Source=C:\Users\Jonathan\Documents\DEV\FIF\Projects\FIF1.4\FIF1.4\FuturesInFaith1.4\FuturesInFaith.sqlite;Version=3;";
+        //public static string ConnectionString = @"Data Source=C:\Users\Jonathan\Documents\DEV\FIF\Projects\FIF1.4\FIF1.4\FuturesInFaith1.4\FuturesInFaith.sqlite;Version=3;";
         //public static string ConnectionString = @"Data Source=C:\Users\Jonathan\Documents\Software Development\Futures In Faith\Visual Studio Projects\FuturesInFaith1.4\FuturesInFaith1.4\FuturesInFaith1.4\FuturesInFaith.sqlite;Version=3;";
-        //public static string ConnectionString = @"Data Source=FuturesInFaith.sqlite;Version=3;";
+        public static string ConnectionString = @"Data Source=FuturesInFaith.sqlite;Version=3;";
         public static bool rebindOnMainForm;
         public static bool rebindYouthOnMainForm;
         public static bool IsFirstLogin;

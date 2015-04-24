@@ -92,6 +92,7 @@ namespace FuturesInFaith1._4
                 MessageBox.Show("There are no investors in the database to edit.");
                 return;
             }
+
             int outInvestorID;
             if(Int32.TryParse(InvestorsListBox.SelectedValue.ToString(), out outInvestorID))
             {
@@ -114,6 +115,11 @@ namespace FuturesInFaith1._4
 
         private void button2_Click(object sender, EventArgs e)//AddInvestorButton
         {
+            if (Globals.GlobalYouth.Count == 0)
+            {
+                MessageBox.Show("Please enter at least one youth in the database before adding investors.");
+                return;
+            }
             AddInvestorForm _addInvestorForm = new AddInvestorForm();
             _addInvestorForm.ShowDialog();
         }
@@ -334,5 +340,7 @@ namespace FuturesInFaith1._4
                 ExportToCSV("WithoutEmail");
             }
         }
+
+
     }
 }
