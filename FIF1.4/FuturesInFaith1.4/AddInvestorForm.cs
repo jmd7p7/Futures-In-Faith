@@ -173,69 +173,6 @@ namespace FuturesInFaith1._4
 
         }
 
-
-        //private void AddInvestorDataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
-        //{
-        //    e.Control.KeyPress -= new KeyPressEventHandler(AmountColumn_KeyPress);
-        //    if (AddInvestorDataGridView.CurrentCell.ColumnIndex == 3 ||
-        //        AddInvestorDataGridView.CurrentCell.ColumnIndex == 8) 
-        //    {
-        //        TextBox tb = e.Control as TextBox;
-        //        if (tb != null)
-        //        {
-        //            tb.KeyPress += new KeyPressEventHandler(AmountColumn_KeyPress);
-        //        }
-        //    }
-        //}
-
-
-
-        //private void AddInvestorDataGridView_DefaultValuesNeeded(object sender, DataGridViewRowEventArgs e)
-        //{
-        //    e.Row.Cells[10].Value = Globals.DefaultCreditToType;
-        //    e.Row.Cells[12].Value = Globals.DefaultPaymentType;
-        //    e.Row.Cells[3].Value = Globals.DefaultInvestmentAmount;
-        //}
-
-        //private void AddInvestorDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        //{
-        //    if(e.ColumnIndex == 10)
-        //    {
-        //        if (e.RowIndex >= 0)
-        //        {
-        //            if (AddInvestorDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString() == "youth")
-        //            {
-        //                AddInvestorDataGridView.Rows[e.RowIndex].Cells[11].ReadOnly = false;
-        //                AddInvestorDataGridView.Rows[e.RowIndex].Cells[11].Value = Globals.GlobalYouth.First().FullName;
-        //            }
-        //            else
-        //            {
-        //                AddInvestorDataGridView.Rows[e.RowIndex].Cells[11].ReadOnly = true;
-        //                AddInvestorDataGridView.Rows[e.RowIndex].Cells[11].Value = "";
-        //            }
-        //        }
-        //    }
-
-        //    if(e.ColumnIndex == 12)
-        //    {
-        //        if(e.RowIndex >= 0)
-        //        {
-        //            if(AddInvestorDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString() == "check")
-        //            {
-        //                AddInvestorDataGridView.Rows[e.RowIndex].Cells[8].ReadOnly = false;
-        //            }
-        //            else
-        //            {
-        //                AddInvestorDataGridView.Rows[e.RowIndex].Cells[8].ReadOnly = true;
-        //                AddInvestorDataGridView.Rows[e.RowIndex].Cells[8].Value = "";
-        //                AddInvestorDataGridView.Columns[8].ToolTipText = "Select 'check' in the 'Payment Type' to enter a check number.";
-        //            }
-        //        }
-        //    }
-        //}
-
-
-
         private bool checkForInvalidValues(DataGridViewRow row)
         {
             if(row.Cells[1].Value == null)
@@ -275,15 +212,6 @@ namespace FuturesInFaith1._4
             }
             return false;
         }
-
-        //private void AddInvestorDataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
-        //{
-        //    if(AddInvestorDataGridView.CurrentCell is DataGridViewComboBoxCell)
-        //    {
-        //        AddInvestorDataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
-        //        AddInvestorDataGridView.EndEdit();
-        //    }
-        //}
 
         //Ensure that only numbers can be entered into amount and check number
         private void InvDataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
@@ -365,20 +293,27 @@ namespace FuturesInFaith1._4
 
         private void saveAndEmailToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //First check for invalid cells on the datagrid
-            foreach (DataGridViewRow row in InvDataGridView.SelectedRows)
-            {
-                if (checkForInvalidValues(row))
-                {
-                    return;
-                }
-            }
 
             //check to make sure that the required fields have been entered
             if (!RequiredFieldsAreFilledOut())
             {
                 MessageBox.Show("Please fill out all required fields.");
                 return;
+            }
+
+            if(InvDataGridView.Rows[0].IsNewRow)
+            {
+                MessageBox.Show("You have not entered any investments to email");
+                return;
+            }
+
+            //check for invalid cells on the datagrid
+            foreach (DataGridViewRow row in InvDataGridView.SelectedRows)
+            {
+                if (checkForInvalidValues(row))
+                {
+                    return;
+                }
             }
 
             //After all the user data has been verified, make sure the user is ready to save changes.

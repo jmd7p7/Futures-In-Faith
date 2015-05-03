@@ -190,7 +190,7 @@ namespace FuturesInFaith1._4
         }
 
 
-
+        #region creating reports functionality
         private void CreateInvestorReportButton_Click(object sender, EventArgs e)
         {
             if(SortByFirstLastRadio.Checked)
@@ -219,6 +219,30 @@ namespace FuturesInFaith1._4
             }
         }
 
+        private void CreateYouthReportButton_Click(object sender, EventArgs e)
+        {
+            string sortParam;
+            if (EverythingYouthSortRadio.Checked == true)
+            {
+                sortParam = "Everything";
+            }
+            else if (GeneralFundYouthSortRadio.Checked == true)
+            {
+                sortParam = "GeneralFundOnly";
+            }
+            else if (AllYouthYouthSortRadio.Checked == true)
+            {
+                sortParam = "YouthOnly";
+            }
+            else //Individual Youth is selected
+            {
+                sortParam = "IndividualYouth";
+            }
+            YouthReportForm YRF = new YouthReportForm(sortParam, StartDateDateTimePicker.Value, EndDateDateTimePicker.Value, IndividualYouthComboBox.SelectedValue.ToString());
+            YRF.Show();
+        }
+        #endregion
+
         private void SaveSettingsButton_Click(object sender, EventArgs e)
         {
             DBCommunication.SaveSettings(AdminEmailTextBox.Text, AdminPasswordTextBox.Text, ProgramStartDateTimePicker.Value,
@@ -235,30 +259,10 @@ namespace FuturesInFaith1._4
             }
         }
 
-        private void CreateYouthReportButton_Click(object sender, EventArgs e)
-        {
-            string sortParam;
-            if(EverythingYouthSortRadio.Checked == true)
-            {
-                sortParam = "Everything";
-            }
-            else if(GeneralFundYouthSortRadio.Checked == true)
-            {
-                sortParam = "GeneralFundOnly";
-            }
-            else if(AllYouthYouthSortRadio.Checked == true)
-            {
-                sortParam = "YouthOnly";
-            }
-            else //Individual Youth is selected
-            {
-                sortParam = "IndividualYouth";
-            }
-            YouthReportForm YRF = new YouthReportForm(sortParam, StartDateDateTimePicker.Value, EndDateDateTimePicker.Value, IndividualYouthComboBox.SelectedValue.ToString());
-            YRF.Show();
-        }
 
-        private bool ExportToCSV(string param)
+
+        #region Export to CVS functionality
+        private bool ExportAllToCSV(string param)
         {
 
             SaveFileDialog SFD = new SaveFileDialog();
@@ -325,22 +329,143 @@ namespace FuturesInFaith1._4
             return false;
         }
 
+        private bool ExportInvestorsWithoutEmailToCSV()
+        {
+
+            SaveFileDialog SFD = new SaveFileDialog();
+            SFD.Filter = "CSV Files (*.csv)|*.csv";
+            SFD.FileName = "FIF_Investors No Email";
+            if (SFD.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                // Create a file to write to. 
+                using (System.IO.StreamWriter sw = System.IO.File.CreateText(SFD.FileName))
+                {
+                    string _deceased;
+                    //first write headers
+                    sw.WriteLine("Last Name, First Name, E-mail Address, Home Address, City, State, Zip, Phone, Join Date, Deceased, Label Name, Last InvYear");
+                    foreach (Investor2 i in Globals.GlobalInvestors.Where(i => i.Email == ""))
+                    {
+                        if (i.Deceased == true)
+                        {
+                            _deceased = "true";
+                        }
+                        else
+                        {
+                            _deceased = "false";
+                        }
+                        sw.WriteLine(string.Format("{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}",
+                            i.LastName, i.FirstName, i.Email, i.Address, i.City, i.State, i.Zip, i.Phone, i.JoinDate.ToShortDateString(), _deceased, i.LastName, i.LastInvestYear));
+                    }
+                }
+            }
+            return false;
+        }
+
+        private bool ExportInvestorsWithEmailToCSV()
+        {
+            SaveFileDialog SFD = new SaveFileDialog();
+            SFD.Filter = "CSV Files (*.csv)|*.csv";
+            SFD.FileName = "FIF_Investors With Email";
+            if (SFD.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                // Create a file to write to. 
+                using (System.IO.StreamWriter sw = System.IO.File.CreateText(SFD.FileName))
+                {
+                    string _deceased;
+                    //first write headers
+                    sw.WriteLine("Last Name, First Name, E-mail Address, Home Address, City, State, Zip, Phone, Join Date, Deceased, Label Name, Last InvYear");
+                    foreach (Investor2 i in Globals.GlobalInvestors.Where(i => i.Email != ""))
+                    {
+                        if (i.Deceased == true)
+                        {
+                            _deceased = "true";
+                        }
+                        else
+                        {
+                            _deceased = "false";
+                        }
+                        sw.WriteLine(string.Format("{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}",
+                            i.LastName, i.FirstName, i.Email, i.Address, i.City, i.State, i.Zip, i.Phone, i.JoinDate.ToShortDateString(), _deceased, i.LastName, i.LastInvestYear));
+                    }
+                }
+            }
+            return false;
+        }
+
+        private bool ExportAllInvestorsToCSV()
+        {
+
+            SaveFileDialog SFD = new SaveFileDialog();
+            SFD.Filter = "CSV Files (*.csv)|*.csv";
+            SFD.FileName = "FIF_All Investors";
+            if (SFD.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                // Create a file to write to. 
+                using (System.IO.StreamWriter sw = System.IO.File.CreateText(SFD.FileName))
+                {
+                    string _deceased;
+                    //first write headers
+                    sw.WriteLine("Last Name, First Name, E-mail Address, Home Address, City, State, Zip, Phone, Join Date, Deceased, Label Name, Last InvYear");
+                    foreach (Investor2 i in Globals.GlobalInvestors)
+                    {
+                        if (i.Deceased == true)
+                        {
+                            _deceased = "true";
+                        }
+                        else
+                        {
+                            _deceased = "false";
+                        }
+                        sw.WriteLine(string.Format("{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}",
+                            i.LastName, i.FirstName, i.Email, i.Address, i.City, i.State, i.Zip, i.Phone, i.JoinDate.ToShortDateString(), _deceased, i.LastName, i.LastInvestYear));
+                    }
+                }
+            }
+            return false;
+        }
+
         private void ExportButton_Click(object sender, EventArgs e)
         {
             if(SortByInvestorsExportRadio.Checked == true)
             {
-                ExportToCSV("All");
+                ExportAllInvestorsToCSV();
             }
             else if(SortByInvWithEmailExportRadio.Checked == true)
             {
-                ExportToCSV("WithEmail");
+                ExportInvestorsWithEmailToCSV();
             }
             else if (SortByInvWithoutEmailExportRadio.Checked == true)
             {
-                ExportToCSV("WithoutEmail");
+                ExportInvestorsWithoutEmailToCSV();
             }
         }
+        #endregion
 
+        private void InvestorsListBox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (Globals.GlobalInvestors.Count == 0)
+            {
+                MessageBox.Show("There are no investors in the database to edit.");
+                return;
+            }
 
+            int outInvestorID;
+            if (Int32.TryParse(InvestorsListBox.SelectedValue.ToString(), out outInvestorID))
+            {
+                try
+                {
+                    InvestorForm _investorForm = new InvestorForm(Globals.GlobalInvestors.Single(i => i.InvestorID == outInvestorID));
+                    _investorForm.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("Unable to find the selected investor in the Database.  \nError Message: {0}", ex.Message));
+                }
+            }
+            else
+            {
+                MessageBox.Show("Could not load investor because the Investor's ID is not an integer.");
+            }
+        }
     }
 }

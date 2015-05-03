@@ -178,84 +178,6 @@ namespace FuturesInFaith1._4
 
             FetchNewAndUpdatedInvestments(newInvestments, updatedInvestments, lastInvestYear);
 
-            #region old code that correctly fetches updated and new investments from the selected rows
-            //foreach (DataGridViewRow row in InvestmentsDataGridView.SelectedRows)
-            //{
-            //    int outAmount, outYouthID;
-            //    string outReinvest;
-            //    string checkNumber = "";
-            //    if (Int32.TryParse(row.Cells[1].Value.ToString(), out outAmount))
-            //    {
-
-            //    }
-            //    if (row.Cells[3].Value != null)
-            //    {
-            //        checkNumber = row.Cells[3].Value.ToString();
-            //    }
-            //    if (row.Cells[4].Value.ToString() != "youth")
-            //    {
-            //        outYouthID = -1;
-            //    }
-            //    else
-            //    {
-            //        outYouthID = Globals.GlobalYouth.Where(y => y.FullName == row.Cells[5].Value.ToString()).Select(y => y.YouthID).Single();
-            //    }
-            //    if (row.Cells[6].Value.GetType() == typeof(string))
-            //    {
-            //        if (row.Cells[6].Value.ToString() == "false")
-            //        {
-            //            outReinvest = "0";
-            //        }
-            //        else
-            //        {
-            //            outReinvest = "1";
-            //        }
-
-            //    }
-            //    else
-            //    {
-            //        if ((bool)row.Cells[6].Value == true)
-            //        {
-            //            outReinvest = "1";
-            //        }
-            //        else
-            //        {
-            //            outReinvest = "0";
-            //        }
-            //    }
-            //    if(row.Cells[9].Value.ToString() == "true") //If true it's a bran new investment
-            //    {
-            //        lastInvestYear = DateTime.Now.Year.ToString(); //Update the investor's LastInvestYear since we're adding a new investment this year
-            //        newInvestments.Add(new Investment2(
-            //                _investorID: selectedInvestor.InvestorID,
-            //                _date: row.Cells[0].Value.ToString(),
-            //                _amount: outAmount,
-            //                _creditTo: row.Cells[4].Value.ToString(),
-            //                _youthID: outYouthID,
-            //                _paymentType: row.Cells[2].Value.ToString(),
-            //                _checkNumber: checkNumber,
-            //                _reinvest: outReinvest
-            //            ));
-            //    }
-            //    else //This is a previously created investment we're now updating
-            //    {
-            //        int outInvestmentID;
-            //        if (Int32.TryParse(row.Cells[8].Value.ToString(), out outInvestmentID)) { }
-            //        updatedInvestments.Add(new Investment2(
-            //            _investmentID: outInvestmentID,
-            //            _investorID: selectedInvestor.InvestorID,
-            //            _date: row.Cells[0].Value.ToString(),
-            //            _amount: outAmount,
-            //            _certificateNumber: row.Cells[7].Value.ToString(),
-            //            _creditTo: row.Cells[4].Value.ToString(),
-            //            _youthID: outYouthID,
-            //            _paymentType: row.Cells[2].Value.ToString(),
-            //            _checkNumber: checkNumber,
-            //            _reinvest: outReinvest
-            //        ));
-            //    }
-            //}
-            #endregion
 
             //Update the investor's information in the DB
             if (!DBCommunication.UpdateInvestor(selectedInvestor.InvestorID, FirstNameTextBox.Text, LastNameTextBox.Text, AddressTextBox.Text,
@@ -433,6 +355,18 @@ namespace FuturesInFaith1._4
 
         private void saveAndEmailCertificatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (InvestmentsDataGridView.SelectedRows.Count == 0)
+            {
+                var result = MessageBox.Show("You have not selected any investments to email.");
+                return;
+            }
+
+            if(EmailTextBox.Text == "")
+            {
+                MessageBox.Show("Please provide an email address.");
+                return;
+            }
+
             if (!RequiredFieldsAreFilledOut())
             {
                 MessageBox.Show("Please fill out all required fields.");
@@ -441,14 +375,6 @@ namespace FuturesInFaith1._4
             if (LabelNameTextBox.Text != FirstNameTextBox.Text + " " + LastNameTextBox.Text)
             {
                 var result = MessageBox.Show("The label name does not match the first and last name.  Continue?", "Name Mis-match Alert!", MessageBoxButtons.YesNo);
-                if (result == System.Windows.Forms.DialogResult.No)
-                {
-                    return;
-                }
-            }
-            if (InvestmentsDataGridView.SelectedRows.Count == 0)
-            {
-                var result = MessageBox.Show("You have not selected any investments to update/add.  Continue?", "Alert!", MessageBoxButtons.YesNo);
                 if (result == System.Windows.Forms.DialogResult.No)
                 {
                     return;

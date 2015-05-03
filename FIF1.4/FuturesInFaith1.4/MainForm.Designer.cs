@@ -164,6 +164,7 @@
             this.InvestorsListBox.Size = new System.Drawing.Size(174, 368);
             this.InvestorsListBox.TabIndex = 0;
             this.InvestorsListBox.SelectedIndexChanged += new System.EventHandler(this.InvestorsListBox_SelectedIndexChanged);
+            this.InvestorsListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.InvestorsListBox_MouseDoubleClick);
             // 
             // Youth
             // 
