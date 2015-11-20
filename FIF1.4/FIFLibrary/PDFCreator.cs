@@ -147,8 +147,7 @@ namespace FIFLibrary
 
         private bool SavePDFToDisk(Investment2 newInvestment)
         {
-            string path;
-            //Code that works for emailing and saving, hopefully printing too
+            //Code that works for emailing and saving, printing
             string FileName = "\\FIF_" + this.Investor.LastName + this.Investor.FirstName + "_" + newInvestment.CertificateNumber + ".pdf";
 
             if(!Directory.Exists(Globals.SaveFilePath))
@@ -226,8 +225,8 @@ namespace FIFLibrary
             try
             {
                 MailMessage mm = new MailMessage(Globals.AdminEmail, this.Investor.Email);
-                mm.Subject = newInvestment.Date.Year.ToString() + " - St. Gabriel Futures in Faith Stock Certificate";
-                mm.Body = CreateEmailMessage(newInvestment.Date, Globals.ProgramStartDate, Globals.ProgramEndDate, this.Investor.FirstName);
+                mm.Subject = GetEmailMessageSuject(newInvestment);
+                mm.Body = GetEmailMessageBody(newInvestment);
                 mm.Attachments.Add(new Attachment(new MemoryStream(bytes), FileName));
                 mm.IsBodyHtml = true;
                 SmtpClient smpt = new SmtpClient();
@@ -268,6 +267,278 @@ namespace FIFLibrary
                                              May God bless and guide us through this year!  And, again, THANK
                                              YOU very much for your generosity and support of St. Gabriel Youth!", RecipientFirstName, DateOfCertificate.Year, AwardsBegin.ToShortDateString(), AwardsEnd.ToShortDateString());
             return message;
+        }
+
+        public string GetEmailMessageBody(Investment2 investment)
+        {
+            StringBuilder injectedMessage = new StringBuilder();
+            bool getNextChar = false;
+            bool skipNext = false;
+            bool indexOverNine = false;
+            for (int i = 0; i < Globals.EmailMessage.Length; i++)
+            {
+                if(skipNext)
+                {
+                    skipNext = false;
+                    continue;
+                }
+                if (getNextChar)
+                {
+                    int currentIndex = Convert.ToInt32(System.Char.GetNumericValue(Globals.EmailMessage[i]));
+
+                    if (indexOverNine)
+                    {
+                        currentIndex = Convert.ToInt32(Globals.EmailMessage[i].ToString() + Globals.EmailMessage[i+1].ToString());
+                        skipNext = true;
+                    }
+
+                    injectWordIntoEmailMessageBody(injectedMessage, currentIndex, investment);
+                    getNextChar = false;
+
+                    if (currentIndex == 9)
+                    {
+                        indexOverNine = true;
+                    }
+
+                    continue;
+                }
+                else if (Globals.EmailMessage[i] == '{')
+                {
+                    getNextChar = true;
+                    continue;
+                }
+                else if (Globals.EmailMessage[i] == '}')
+                {
+                    getNextChar = false;
+                    continue;
+                }
+                else
+                {
+                    injectedMessage.Append(Globals.EmailMessage[i]);
+                }
+            }
+
+            System.Text.RegularExpressions.Regex rgx = new System.Text.RegularExpressions.Regex("\n");
+            string result = rgx.Replace(injectedMessage.ToString(), "<br>");
+            return result;
+        }
+
+        public string GetEmailMessageSuject(Investment2 investment)
+        {
+            StringBuilder injectedMessage = new StringBuilder();
+            bool getNextChar = false;
+            foreach (char c in Globals.EmailSubject)
+            {
+                if (getNextChar)
+                {
+                    injectWordIntoEmailMessageSubject(injectedMessage, Convert.ToInt32(System.Char.GetNumericValue(c)), investment);
+                    getNextChar = false;
+                    continue;
+                }
+                else if (c == '{')
+                {
+                    getNextChar = true;
+                    continue;
+                }
+                else if (c == '}')
+                {
+                    getNextChar = false;
+                    continue;
+                }
+                else
+                {
+                    injectedMessage.Append(c);
+                }
+            }
+            System.Text.RegularExpressions.Regex rgx = new System.Text.RegularExpressions.Regex("\n");
+            string result = rgx.Replace(injectedMessage.ToString(), "<br>");
+            return result;
+        }
+
+        private void injectWordIntoEmailMessageBody(StringBuilder strBldr, int index, Investment2 _investment)
+        {
+            switch (Globals.EmailMessageVariables[index])
+            {
+                case "Amount":
+                    foreach (char c in _investment.Amount.ToString())
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "CertificateNumber":
+                    foreach (char c in _investment.CertificateNumber)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "Date":
+                    foreach (char c in _investment.Date.ToShortDateString())
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "Address":
+                    foreach (char c in Investor.Address)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "City":
+                    foreach (char c in Investor.City)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "State":
+                    foreach (char c in Investor.State)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "Zip":
+                    foreach (char c in Investor.Zip)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "Email":
+                    foreach (char c in Investor.Email)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "FirstName":
+                    foreach (char c in Investor.FirstName)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "LastName":
+                    foreach (char c in Investor.LastName)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "LabelName":
+                    foreach (char c in Investor.LabelName)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "Phone":
+                    foreach (char c in Investor.Phone)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "ProgramStartDate":
+                    foreach (char c in Globals.ProgramStartDate.ToShortDateString())
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "ProgramEndDate":
+                    foreach (char c in Globals.ProgramEndDate.ToShortDateString())
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void injectWordIntoEmailMessageSubject(StringBuilder strBldr, int index, Investment2 _investment)
+        {
+            switch (Globals.EmailSubjectVariables[index])
+            {
+                case "Amount":
+                    foreach (char c in _investment.Amount.ToString())
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "CertificateNumber":
+                    foreach (char c in _investment.CertificateNumber)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "Date":
+                    foreach (char c in _investment.Date.ToShortDateString())
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "Address":
+                    foreach (char c in Investor.Address)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "City":
+                    foreach (char c in Investor.City)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "State":
+                    foreach (char c in Investor.State)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "Zip":
+                    foreach (char c in Investor.Zip)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "Email":
+                    foreach (char c in Investor.Email)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "FirstName":
+                    foreach (char c in Investor.FirstName)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "LastName":
+                    foreach (char c in Investor.LastName)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "LabelName":
+                    foreach (char c in Investor.LabelName)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "Phone":
+                    foreach (char c in Investor.Phone)
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "ProgramStartDate":
+                    foreach (char c in Globals.ProgramStartDate.ToShortDateString())
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                case "ProgramEndDate":
+                    foreach (char c in Globals.ProgramEndDate.ToShortDateString())
+                    {
+                        strBldr.Append(c);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

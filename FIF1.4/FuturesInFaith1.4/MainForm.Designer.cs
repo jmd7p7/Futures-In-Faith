@@ -88,6 +88,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.EditEmailButton = new System.Windows.Forms.Button();
             this.MainTabControl.SuspendLayout();
             this.InvestorsTab.SuspendLayout();
             this.Youth.SuspendLayout();
@@ -533,6 +534,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.EditEmailButton);
             this.tabPage1.Controls.Add(this.SaveSettingsButton);
             this.tabPage1.Controls.Add(this.label16);
             this.tabPage1.Controls.Add(this.DefaultFilePathTextBox);
@@ -561,7 +563,7 @@
             // 
             // SaveSettingsButton
             // 
-            this.SaveSettingsButton.Location = new System.Drawing.Point(150, 304);
+            this.SaveSettingsButton.Location = new System.Drawing.Point(150, 401);
             this.SaveSettingsButton.Name = "SaveSettingsButton";
             this.SaveSettingsButton.Size = new System.Drawing.Size(188, 23);
             this.SaveSettingsButton.TabIndex = 17;
@@ -768,6 +770,16 @@
             this.label8.TabIndex = 0;
             this.label8.Text = "Admin Email:";
             // 
+            // EditEmailButton
+            // 
+            this.EditEmailButton.Location = new System.Drawing.Point(150, 294);
+            this.EditEmailButton.Name = "EditEmailButton";
+            this.EditEmailButton.Size = new System.Drawing.Size(188, 23);
+            this.EditEmailButton.TabIndex = 18;
+            this.EditEmailButton.Text = "View/Edit Email Message";
+            this.EditEmailButton.UseVisualStyleBackColor = true;
+            this.EditEmailButton.Click += new System.EventHandler(this.EditEmailButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -866,6 +878,7 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Button SaveSettingsButton;
         private System.Windows.Forms.ComboBox IndividualYouthComboBox;
+        private System.Windows.Forms.Button EditEmailButton;
     }
 }
 

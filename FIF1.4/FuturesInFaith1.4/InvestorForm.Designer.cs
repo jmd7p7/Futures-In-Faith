@@ -445,14 +445,12 @@
             this.InvestmentsDataGridView.DefaultValuesNeeded += new System.Windows.Forms.DataGridViewRowEventHandler(this.InvestmentsDataGridView_DefaultValuesNeeded);
             this.InvestmentsDataGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.InvestmentsDataGridView_EditingControlShowing);
             // 
-            // investmentBindingSource2
-            // 
-            this.investmentBindingSource2.DataSource = typeof(FIFLibrary.Investment);
             // 
             // InvestorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.ClientSize = new System.Drawing.Size(884, 415);
             this.Controls.Add(this.InvestmentsDataGridView);
             this.Controls.Add(this.groupBox5);

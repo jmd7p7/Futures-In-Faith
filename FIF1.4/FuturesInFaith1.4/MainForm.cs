@@ -467,5 +467,11 @@ namespace FuturesInFaith1._4
                 MessageBox.Show("Could not load investor because the Investor's ID is not an integer.");
             }
         }
+
+        private void EditEmailButton_Click(object sender, EventArgs e)
+        {
+            EmailMessage EmailMessageForm = new EmailMessage();
+            EmailMessageForm.Show();
+        }
     }
 }

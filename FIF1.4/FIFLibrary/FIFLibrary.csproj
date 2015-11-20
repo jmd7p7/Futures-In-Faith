@@ -65,13 +65,11 @@
     <Compile Include="CalendarColumn.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DataSource.cs" />
     <Compile Include="DBCommunication.cs" />
+    <Compile Include="EmailMessageBuilder.cs" />
     <Compile Include="Globals.cs" />
-    <Compile Include="Investment.cs" />
     <Compile Include="Investment2.cs" />
     <Compile Include="InvestmentReportItem.cs" />
-    <Compile Include="Investor.cs" />
     <Compile Include="Investor2.cs" />
     <Compile Include="PDFCreator.cs" />
     <Compile Include="PDFPrinter.cs" />

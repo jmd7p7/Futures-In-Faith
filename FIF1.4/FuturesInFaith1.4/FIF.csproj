@@ -113,6 +113,12 @@
     <Compile Include="AddYouthForm.Designer.cs">
       <DependentUpon>AddYouthForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="EmailMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EmailMessage.Designer.cs">
+      <DependentUpon>EmailMessage.cs</DependentUpon>
+    </Compile>
     <Compile Include="InitialSetupForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -162,6 +168,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AddYouthForm.resx">
       <DependentUpon>AddYouthForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailMessage.resx">
+      <DependentUpon>EmailMessage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InitialSetupForm.resx">
       <DependentUpon>InitialSetupForm.cs</DependentUpon>

@@ -441,9 +441,6 @@
             // 
             this.investment2BindingSource.DataSource = typeof(FIFLibrary.Investment2);
             // 
-            // investmentBindingSource
-            // 
-            this.investmentBindingSource.DataSource = typeof(FIFLibrary.Investment);
             // 
             // AddInvestorForm
             // 

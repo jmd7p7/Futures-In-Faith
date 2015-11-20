@@ -113,6 +113,19 @@ namespace FuturesInFaith1._4
                 return;
             }
 
+            //check to make sure the user does not already exist in the DB
+            int checkIfUserExistsResult = DBCommunication.checkIfInvestorExists(InvestorFNTextBox.Text, InvestorLNTextBox.Text);
+            if (checkIfUserExistsResult == -1)
+            {
+                return;
+            }
+            if (checkIfUserExistsResult > 0)
+            {
+                MessageBox.Show(string.Format("A user with the first name {0} and last name {1} already exists in the database.", InvestorFNTextBox.Text, InvestorLNTextBox.Text));
+                return;
+            }
+
+
             //After all the user data has been verified, make sure the user is ready to save changes.
             var dialogResult = MessageBox.Show("Changes will be saved now.  Continue?", "Alert!", MessageBoxButtons.YesNo);
             if (dialogResult == System.Windows.Forms.DialogResult.No)
@@ -301,6 +314,19 @@ namespace FuturesInFaith1._4
                 return;
             }
 
+            //check to make sure the user does not already exist in the DB
+            int checkIfUserExistsResult = DBCommunication.checkIfInvestorExists(InvestorFNTextBox.Text, InvestorLNTextBox.Text);
+            if (checkIfUserExistsResult == -1)
+            {
+                return;
+            }
+            if (checkIfUserExistsResult > 0)
+            {
+                MessageBox.Show(string.Format("A user with the first name {0} and last name {1} already exists in the database.", InvestorFNTextBox.Text, InvestorLNTextBox.Text));
+                return;
+            }
+
+
             if(InvDataGridView.Rows[0].IsNewRow)
             {
                 MessageBox.Show("You have not entered any investments to email");
@@ -408,6 +434,17 @@ namespace FuturesInFaith1._4
             var dialogResult = MessageBox.Show("Changes will be saved now.  Continue?", "Alert!", MessageBoxButtons.YesNo);
             if (dialogResult == System.Windows.Forms.DialogResult.No)
             {
+                return;
+            }
+
+            int checkIfUserExistsResult = DBCommunication.checkIfInvestorExists(InvestorFNTextBox.Text, InvestorLNTextBox.Text);
+            if (checkIfUserExistsResult == -1)
+            {
+                return;
+            }
+            if (checkIfUserExistsResult > 0)
+            {
+                MessageBox.Show(string.Format("A user with the first name {0} and last name {1} already exists in the database.", InvestorFNTextBox.Text, InvestorLNTextBox.Text));
                 return;
             }
 

@@ -51,7 +51,7 @@
             // 
             // CreateSettingsButton
             // 
-            this.CreateSettingsButton.Location = new System.Drawing.Point(151, 300);
+            this.CreateSettingsButton.Location = new System.Drawing.Point(152, 303);
             this.CreateSettingsButton.Name = "CreateSettingsButton";
             this.CreateSettingsButton.Size = new System.Drawing.Size(188, 23);
             this.CreateSettingsButton.TabIndex = 35;
@@ -262,7 +262,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(352, 331);
+            this.ClientSize = new System.Drawing.Size(352, 338);
             this.Controls.Add(this.CreateSettingsButton);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.DefaultFilePathTextBox);

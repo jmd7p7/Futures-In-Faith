@@ -14,9 +14,14 @@ namespace FIFLibrary
         //public static string ConnectionString = @"Data Source=C:\Users\Jonathan\Documents\DEV\FIF\Projects\FIF1.4\FIF1.4\FuturesInFaith1.4\FuturesInFaith.sqlite;Version=3;";
         //public static string ConnectionString = @"Data Source=C:\Users\Jonathan\Documents\Software Development\Futures In Faith\Visual Studio Projects\FuturesInFaith1.4\FuturesInFaith1.4\FuturesInFaith1.4\FuturesInFaith.sqlite;Version=3;";
         public static string ConnectionString = @"Data Source=FuturesInFaith.sqlite;Version=3;";
+        public static string EmailMessage;
+        public static List<string> EmailMessageVariables;
+        public static string EmailSubject;
+        public static List<string> EmailSubjectVariables;
         public static bool rebindOnMainForm;
         public static bool rebindYouthOnMainForm;
         public static bool IsFirstLogin;
+        
 
 
         public static List<Investor2> GlobalInvestors;
@@ -33,8 +38,8 @@ namespace FIFLibrary
         public static string SaveFilePath = @"C:\Users\Jonathan\Desktop\temp files\FIF\";
         public static DateTime ProgramStartDate = Convert.ToDateTime("1/1/2010"); //This will be initialized by the global user settings
         public static DateTime ProgramEndDate;  //This will be initialized by the global user settings
-        public static string AdminEmail = "stgabesmusik@gmail.com";
-        public static string AdminPassword = "mnjkiu89";
+        public static string AdminEmail;
+        public static string AdminPassword;
 
         //Global methods
 

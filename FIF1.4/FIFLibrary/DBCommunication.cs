@@ -607,6 +607,10 @@ namespace FIFLibrary
                             Globals.ProgramStartDate = Convert.ToDateTime(rdr["ProgramStartDate"].ToString());
                             Globals.ProgramEndDate = Convert.ToDateTime(rdr["ProgramEndDate"].ToString());
                             Globals.DefaultInvestmentAmount = Convert.ToInt32(rdr["DefaultInvestmentAmount"].ToString());
+                            Globals.EmailMessage = rdr["Extra4"].ToString();
+                            Globals.EmailSubject = rdr["Extra2"].ToString();
+                            Globals.EmailMessageVariables = rdr["Extra5"].ToString().Split(',').ToList();
+                            Globals.EmailSubjectVariables = rdr["Extra3"].ToString().Split(',').ToList();
                         }
                     }
                 }
@@ -645,9 +649,71 @@ namespace FIFLibrary
             }
             return false;
         }
-        public static bool InitialSetup()
+
+        /*
+         *  Additions to the database:
+         *  Column Extra2 holds the text for the email subject
+         *  Column Extra3 holds the variables for the email subject
+         *  Column Extra4 holds the text for the email subject
+         *  Column Extra5 holds the variables for the email subject
+         */
+        public static bool SaveEmailSubjectOrMessageToDB(string text,string variables, bool isSubject)
         {
-            return false;
+            int textColumnNumber, variablesColumnNumber;
+            if (isSubject)
+            {
+                textColumnNumber = 2;
+                variablesColumnNumber = 3;
+            }
+            else
+            {
+                textColumnNumber = 4;
+                variablesColumnNumber = 5;
+            }
+            string saveSettingsCommandString =
+                string.Format(@"UPDATE SETTINGS SET 
+                                Extra{0} = '{1}',
+                                Extra{2} = '{3}'
+                                WHERE SettingsID = 1", textColumnNumber, text, variablesColumnNumber, variables);
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(Globals.ConnectionString))
+                {
+                    using (SQLiteCommand saveSettingsCommand = new SQLiteCommand(saveSettingsCommandString, conn))
+                    {
+                        conn.Open();
+                        int result = saveSettingsCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(string.Format("Unable to save email message or subject to the database.  \nError Message: {0}", ex.Message));
+                return false;
+            }
+            return true;
+        }
+
+        public static int checkIfInvestorExists(string _firstName, string _lastName)
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(Globals.ConnectionString))
+                {
+                    string checkIfExistsCmdString = "SELECT EXISTS(SELECT 1 FROM investor WHERE FirstName || LastName ='" + _firstName + _lastName + "' LIMIT 1)";
+                    using (SQLiteCommand checkIfExistsCmd = new SQLiteCommand(checkIfExistsCmdString, conn))
+                    {
+                        conn.Open();
+                        int result = Convert.ToInt32(checkIfExistsCmd.ExecuteScalar());
+                        return result;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(string.Format("Unable to verify if the user already exists in the database.  \nError Message: {0}", ex.Message));
+            }
+            return -1;
         }
     }
 }
