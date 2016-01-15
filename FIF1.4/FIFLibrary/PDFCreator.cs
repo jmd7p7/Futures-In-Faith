@@ -7,6 +7,8 @@ using iTextSharp.text.pdf;
 using System.IO;
 using System.Windows.Forms;
 using System.Net.Mail;
+using Common.MessageBuilder;
+using FIFLibrary.EmailMessage;
 
 namespace FIFLibrary
 {
@@ -21,13 +23,6 @@ namespace FIFLibrary
         {
             bool success = false;
             success = SavePDFToDisk(newInvestment); //always save PDF to disk
-
-            //Don't need the print capability for now, I'm leaving the code in in case
-            //I want to go back and add print capability in later
-            //if (EmailORPrint == "print")
-            //{
-            //    PrintPDF(newInvestment);
-            //}
 
             if(EmailORPrint == "email")
             {
@@ -222,29 +217,46 @@ namespace FIFLibrary
             }
 
             //PDF is created and in memory stream.  
+
+            IMessageVariablesProvider[] emailVariableProviders = { 
+                this.Investor, newInvestment, new ProgramVariablesAndValuesProvider()
+            };
             try
             {
-                MailMessage mm = new MailMessage(Globals.AdminEmail, this.Investor.Email);
-                mm.Subject = GetEmailMessageSuject(newInvestment);
-                mm.Body = GetEmailMessageBody(newInvestment);
-                mm.Attachments.Add(new Attachment(new MemoryStream(bytes), FileName));
-                mm.IsBodyHtml = true;
-                SmtpClient smpt = new SmtpClient();
-                smpt.Host = "smtp." + Globals.AdminEmail.Substring(Globals.AdminEmail.IndexOf("@") + 1);
-                smpt.EnableSsl = true;
-                System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
-                NetworkCred.UserName = Globals.AdminEmail;
-                NetworkCred.Password = Globals.AdminPassword;
-                smpt.UseDefaultCredentials = true;
-                smpt.Credentials = NetworkCred;
-                smpt.Port = 587;
-                smpt.Send(mm);
+                EmailMessageCreator emailMessageCreator = new EmailMessageCreator(emailVariableProviders);
+                try
+                {
+                    MailMessage mm = new MailMessage(Globals.AdminEmail, this.Investor.Email);
+                    mm.Subject = emailMessageCreator.getInjectedEmailSubject();
+                    mm.Body = emailMessageCreator.getInjectedEmailMessage();
+                    mm.Attachments.Add(new Attachment(new MemoryStream(bytes), FileName));
+                    mm.IsBodyHtml = true;
+                    SmtpClient smpt = new SmtpClient();
+                    smpt.Host = "smtp." + Globals.AdminEmail.Substring(Globals.AdminEmail.IndexOf("@") + 1);
+                    smpt.EnableSsl = true;
+                    System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
+                    NetworkCred.UserName = Globals.AdminEmail;
+                    NetworkCred.Password = Globals.AdminPassword;
+                    smpt.UseDefaultCredentials = true;
+                    smpt.Credentials = NetworkCred;
+                    smpt.Port = 587;
+                    smpt.Send(mm);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("For at least one of the investments the program was unable to email PDF.  Please check your records to verify.  \nError Message: {0}", ex.Message));
+                    return false;
+                }
             }
-            catch(Exception ex)
+            catch (ArgumentNullException ex)
             {
-                MessageBox.Show(string.Format("For at least one of the investments the program was unable to email PDF.  Please check your records to verify.  \nError Message: {0}",ex.Message));
-                return false;
+                MessageBox.Show(ex.Message);
             }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
             return true;
         }
 

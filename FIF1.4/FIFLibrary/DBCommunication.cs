@@ -650,49 +650,140 @@ namespace FIFLibrary
             return false;
         }
 
-        /*
-         *  Additions to the database:
-         *  Column Extra2 holds the text for the email subject
-         *  Column Extra3 holds the variables for the email subject
-         *  Column Extra4 holds the text for the email subject
-         *  Column Extra5 holds the variables for the email subject
-         */
-        public static bool SaveEmailSubjectOrMessageToDB(string text,string variables, bool isSubject)
+        public static void saveEmailMessage(String message)
         {
-            int textColumnNumber, variablesColumnNumber;
-            if (isSubject)
-            {
-                textColumnNumber = 2;
-                variablesColumnNumber = 3;
-            }
-            else
-            {
-                textColumnNumber = 4;
-                variablesColumnNumber = 5;
-            }
-            string saveSettingsCommandString =
-                string.Format(@"UPDATE SETTINGS SET 
-                                Extra{0} = '{1}',
-                                Extra{2} = '{3}'
-                                WHERE SettingsID = 1", textColumnNumber, text, variablesColumnNumber, variables);
+            string saveEmailMessageCommandString = "UPDATE SETTINGS SET Extra4 = @message WHERE SettingsID = 1";
+
             try
             {
                 using (SQLiteConnection conn = new SQLiteConnection(Globals.ConnectionString))
                 {
-                    using (SQLiteCommand saveSettingsCommand = new SQLiteCommand(saveSettingsCommandString, conn))
+                    using (SQLiteCommand saveEmailMessageCommand = new SQLiteCommand(saveEmailMessageCommandString, conn))
                     {
+                        saveEmailMessageCommand.Parameters.AddWithValue("@message", message);
                         conn.Open();
-                        int result = saveSettingsCommand.ExecuteNonQuery();
+                        int result = saveEmailMessageCommand.ExecuteNonQuery();
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show(string.Format("Unable to save email message or subject to the database.  \nError Message: {0}", ex.Message));
-                return false;
-            }
-            return true;
+                System.Windows.Forms.MessageBox.Show(string.Format("Unable to save email to the database.  \nError Message: {0}", ex.Message));
+            }          
         }
+
+        public static void saveEmailSubject(String subject)
+        {
+            string saveEmailSubjectCommandString = "UPDATE SETTINGS SET Extra2 = @subject WHERE SettingsID = 1";
+
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(Globals.ConnectionString))
+                {
+                    using (SQLiteCommand saveEmailSubjectCommand = new SQLiteCommand(saveEmailSubjectCommandString, conn))
+                    {
+                        saveEmailSubjectCommand.Parameters.AddWithValue("@subject", subject);
+                        conn.Open();
+                        int result = saveEmailSubjectCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(string.Format("Unable to save email to the database.  \nError Message: {0}", ex.Message));
+            }  
+        }
+
+        /*
+         *  Additions to the database:
+         *  Column Extra2 holds the text for the email subject
+         *  Column Extra3 holds the variables for the email subject
+         *  Column Extra4 holds the text for the email Message
+         *  Column Extra5 holds the variables for the email Message
+         */
+
+        //Extra4 is the column in the settings tables where the email message is stored
+        public static String getEmailMessage()
+        {
+            String getEmailMessageCommandString = "SELECT Extra4 FROM Settings WHERE SettingsID = 1";
+            String queryResult = null;
+            try
+            {
+                using (SQLiteConnection con = new SQLiteConnection(Globals.ConnectionString))
+                {
+                    using (SQLiteCommand getEmailMessageCommand = new SQLiteCommand(getEmailMessageCommandString, con))
+                    {
+                        con.Open();
+                        queryResult = (String)getEmailMessageCommand.ExecuteScalar();
+                    }
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                System.Windows.Forms.MessageBox.Show(string.Format("Unable to retrieve email message from the database.  \nError Message: {0}", ex.Message));
+            }
+            return queryResult;
+        }
+
+        public static String getEmailSubject()
+        {
+            //Extra2 is the column in the settings tables where the email subject is stored
+            String getEmailSubjectCommandString = "SELECT Extra2 FROM Settings WHERE SettingsID = 1";
+            String queryResult = null;
+            try
+            {
+                using (SQLiteConnection con = new SQLiteConnection(Globals.ConnectionString))
+                {
+                    using (SQLiteCommand getEmailSubjectCommand = new SQLiteCommand(getEmailSubjectCommandString, con))
+                    {
+                        con.Open();
+                        queryResult = (String)getEmailSubjectCommand.ExecuteScalar();
+                    }
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                System.Windows.Forms.MessageBox.Show(string.Format("Unable to retrieve email subject from the database.  \nError Message: {0}", ex.Message));
+            }
+            return queryResult;
+        }
+
+//        public static bool SaveEmailSubjectOrMessageToDB(string text,string variables, bool isSubject)
+//        {
+//            int textColumnNumber, variablesColumnNumber;
+//            if (isSubject)
+//            {
+//                textColumnNumber = 2;
+//                variablesColumnNumber = 3;
+//            }
+//            else
+//            {
+//                textColumnNumber = 4;
+//                variablesColumnNumber = 5;
+//            }
+//            string saveSettingsCommandString =
+//                string.Format(@"UPDATE SETTINGS SET 
+//                                Extra{0} = '{1}',
+//                                Extra{2} = '{3}'
+//                                WHERE SettingsID = 1", textColumnNumber, text, variablesColumnNumber, variables);
+//            try
+//            {
+//                using (SQLiteConnection conn = new SQLiteConnection(Globals.ConnectionString))
+//                {
+//                    using (SQLiteCommand saveSettingsCommand = new SQLiteCommand(saveSettingsCommandString, conn))
+//                    {
+//                        conn.Open();
+//                        int result = saveSettingsCommand.ExecuteNonQuery();
+//                    }
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                System.Windows.Forms.MessageBox.Show(string.Format("Unable to save email message or subject to the database.  \nError Message: {0}", ex.Message));
+//                return false;
+//            }
+//            return true;
+//        }
 
         public static int checkIfInvestorExists(string _firstName, string _lastName)
         {

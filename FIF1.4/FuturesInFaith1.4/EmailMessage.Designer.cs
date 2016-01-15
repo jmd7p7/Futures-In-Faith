@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EmailMessage));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.EmailSubjectTextbox = new System.Windows.Forms.TextBox();
@@ -38,8 +39,8 @@
             this.saveAndCloseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cancelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.EmailSubjectRadio = new System.Windows.Forms.RadioButton();
             this.MessageBodyRadio = new System.Windows.Forms.RadioButton();
+            this.EmailSubjectRadio = new System.Windows.Forms.RadioButton();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -79,22 +80,10 @@
             // 
             // EmailVariablesListBox
             // 
+            FIFLibrary.EmailMessage.EmailVariablesManager variablesManager =
+                new FIFLibrary.EmailMessage.EmailVariablesManager();
+            this.EmailVariablesListBox.DataSource = variablesManager.getVariableNames();
             this.EmailVariablesListBox.FormattingEnabled = true;
-            this.EmailVariablesListBox.Items.AddRange(new object[] {
-            "{Amount}",
-            "{CertificateNumber}",
-            "{Date}",
-            "{FirstName}",
-            "{LastName}",
-            "{LabelName}",
-            "{Email}",
-            "{Phone}",
-            "{Address}",
-            "{City}",
-            "{State}",
-            "{Zip}",
-            "{ProgramStartDate}",
-            "{ProgramEndDate}"});
             this.EmailVariablesListBox.Location = new System.Drawing.Point(368, 174);
             this.EmailVariablesListBox.Name = "EmailVariablesListBox";
             this.EmailVariablesListBox.Size = new System.Drawing.Size(182, 225);
@@ -148,6 +137,17 @@
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             // 
+            // MessageBodyRadio
+            // 
+            this.MessageBodyRadio.AutoSize = true;
+            this.MessageBodyRadio.Location = new System.Drawing.Point(6, 42);
+            this.MessageBodyRadio.Name = "MessageBodyRadio";
+            this.MessageBodyRadio.Size = new System.Drawing.Size(126, 17);
+            this.MessageBodyRadio.TabIndex = 1;
+            this.MessageBodyRadio.Text = "Use in message body";
+            this.MessageBodyRadio.UseVisualStyleBackColor = true;
+            this.MessageBodyRadio.CheckedChanged += new System.EventHandler(this.MessageBodyRadio_CheckedChanged);
+            // 
             // EmailSubjectRadio
             // 
             this.EmailSubjectRadio.AutoSize = true;
@@ -159,16 +159,7 @@
             this.EmailSubjectRadio.TabStop = true;
             this.EmailSubjectRadio.Text = "Use in subject";
             this.EmailSubjectRadio.UseVisualStyleBackColor = true;
-            // 
-            // MessageBodyRadio
-            // 
-            this.MessageBodyRadio.AutoSize = true;
-            this.MessageBodyRadio.Location = new System.Drawing.Point(6, 42);
-            this.MessageBodyRadio.Name = "MessageBodyRadio";
-            this.MessageBodyRadio.Size = new System.Drawing.Size(126, 17);
-            this.MessageBodyRadio.TabIndex = 1;
-            this.MessageBodyRadio.Text = "Use in message body";
-            this.MessageBodyRadio.UseVisualStyleBackColor = true;
+            this.EmailSubjectRadio.CheckedChanged += new System.EventHandler(this.EmailSubjectRadio_CheckedChanged);
             // 
             // EmailMessage
             // 

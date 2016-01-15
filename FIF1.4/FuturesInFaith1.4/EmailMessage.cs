@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FIFLibrary;
+using Common.MessageBuilder;
 
 namespace FuturesInFaith1._4
 {
@@ -16,23 +17,55 @@ namespace FuturesInFaith1._4
         public EmailMessage()
         {
             InitializeComponent();
+            EmailVariablesListBox.Focus();
         }
 
         private void saveAndCloseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EmailMessageBuilder MessageBuilder = 
-                new EmailMessageBuilder(EmailSubjectTextbox.Text, EmailMessageRichText.Text);
-            if (!MessageBuilder.CreateEmailBody())
+            try
+            {
+                FIFLibrary.EmailMessage.EmailTemplateCreator emailMessageTemplate =
+                    new FIFLibrary.EmailMessage.EmailTemplateCreator(EmailSubjectTextbox.Text, EmailMessageRichText.Text);
+                emailMessageTemplate.save();
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(ex.Message);
                 return;
-            if (!MessageBuilder.CreateEmailSubject())
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
                 return;
-            MessageBox.Show("Your email message has been updated.");
+            }
             this.Close();
+            MessageBox.Show("Your email message has been updated.");
         }
 
         private void EmailVariablesListBox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            EmailMessageRichText.Text += EmailVariablesListBox.SelectedItem;
+            if (MessageBodyRadio.Checked)
+            {
+                EmailMessageRichText.Text += "{{" + EmailVariablesListBox.SelectedItem + "}}";
+                EmailMessageRichTextSetFocus();
+            }
+            else
+            {
+                EmailSubjectTextbox.Text += "{{" + EmailVariablesListBox.SelectedItem + "}}";
+                EmailSubjectTextBoxSetFocus();
+            }
+        }
+
+        private void EmailSubjectTextBoxSetFocus()
+        {
+            EmailSubjectTextbox.Focus();
+            EmailSubjectTextbox.SelectionStart = EmailMessageRichText.Text.Length;
+        }
+
+        private void EmailMessageRichTextSetFocus()
+        {
+            EmailMessageRichText.Focus();
+            EmailMessageRichText.SelectionStart = EmailMessageRichText.Text.Length;
         }
 
         private void cancelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -42,51 +75,19 @@ namespace FuturesInFaith1._4
 
         private void EmailMessage_Load(object sender, EventArgs e)
         {
-            EmailMessageRichText.Text = ReconstructMessage(Globals.EmailMessage, Globals.EmailMessageVariables);
-            EmailSubjectTextbox.Text = ReconstructMessage(Globals.EmailSubject, Globals.EmailSubjectVariables);
+            EmailMessageRichText.Text = DBCommunication.getEmailMessage();
+            EmailSubjectTextbox.Text = DBCommunication.getEmailSubject();
         }
 
-        private string ReconstructMessage(string text, List<string>variables)
+
+        private void EmailSubjectRadio_CheckedChanged(object sender, EventArgs e)
         {
-            StringBuilder result = new StringBuilder();
-            bool getNextChar = false;
-            bool greaterThanNine = false;
-            bool skipNext = false;
-            for (int i = 0; i < text.Length; i++)
-            {
-                if(skipNext)
-                {
-                    skipNext = false;
-                    continue;
-                }
-                if(getNextChar)
-                {
-                    int index;
-                    if (greaterThanNine)
-                    {
-                        index = Convert.ToInt32(text[i].ToString() + text[i + 1].ToString());
-                        skipNext = true;
-                    }
-                    else
-                    {
-                        index = Convert.ToInt32(System.Char.GetNumericValue(text[i]));
-                    }
-                    result.Append("{" + variables[index] + "}");
-                    if (index >= 9)
-                        greaterThanNine = true;
-                    getNextChar = false;
-                    continue;
-                }
-                if (text[i] == '{')
-                {
-                    getNextChar = true;
-                    continue;
-                }
-                if (text[i] == '}')
-                    continue;
-                result.Append(text[i]);
-            }
-            return result.ToString();
+            EmailSubjectTextBoxSetFocus();
+        }
+
+        private void MessageBodyRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            EmailMessageRichTextSetFocus();
         }
     }
 }

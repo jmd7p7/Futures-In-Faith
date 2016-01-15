@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common">
+      <HintPath>..\..\..\..\..\Common\Common\bin\Debug\Common.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -66,11 +69,14 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DBCommunication.cs" />
-    <Compile Include="EmailMessageBuilder.cs" />
+    <Compile Include="EmailMessage\EmailTemplateCreator.cs" />
+    <Compile Include="EmailMessage\EmailVariablesManager.cs" />
+    <Compile Include="EmailMessage\ProgramVariablesAndValuesProvider.cs" />
+    <Compile Include="EmailMessage\EmailMessageCreator.cs" />
     <Compile Include="Globals.cs" />
-    <Compile Include="Investment2.cs" />
+    <Compile Include="Investment\Investment2.cs" />
     <Compile Include="InvestmentReportItem.cs" />
-    <Compile Include="Investor2.cs" />
+    <Compile Include="Investor\Investor2.cs" />
     <Compile Include="PDFCreator.cs" />
     <Compile Include="PDFPrinter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,7 +85,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Testing.cs" />
     <Compile Include="Youth.cs" />
     <Compile Include="YouthReportItem.cs" />
   </ItemGroup>
